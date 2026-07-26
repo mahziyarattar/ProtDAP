@@ -1,0 +1,4 @@
+{
+  "mean_plddt": 91.4,
+  "pdb": "HEADER    SYNTHETIC FIXTURE\nATOM      1  N   MET A   1      11.104  13.207   2.014  1.00 91.40           N\nATOM      2  CA  MET A   1      12.560  13.207   2.014  1.00 91.40           C\nATOM      3  C   MET A   1      13.087  14.628   2.014  1.00 91.40           C\nEND\n"
+}

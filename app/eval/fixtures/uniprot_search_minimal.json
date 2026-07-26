@@ -1,0 +1,33 @@
+{
+  "results": [
+    {
+      "entryType": "UniProtKB reviewed (Swiss-Prot)",
+      "primaryAccession": "P01308",
+      "uniProtkbId": "INS_HUMAN",
+      "organism": {
+        "scientificName": "Homo sapiens"
+      },
+      "proteinDescription": {
+        "recommendedName": {
+          "fullName": {
+            "value": "Insulin"
+          }
+        }
+      },
+      "comments": [
+        {
+          "commentType": "FUNCTION",
+          "texts": [
+            {
+              "value": "Insulin decreases blood glucose concentration."
+            }
+          ]
+        }
+      ],
+      "sequence": {
+        "value": "MALWMRLLPLLALLALWGPDPAAAFVNQHLCGSHLVEALYLVCGERGFFYTPKTRREAEDLQVGQVELGGGPGAGSLQPLALEGSLQKRGIVEQCCTSICSLYQLENYCN",
+        "length": 110
+      }
+    }
+  ]
+}

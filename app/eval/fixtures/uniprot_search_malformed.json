@@ -1,0 +1,3 @@
+{
+  "messages": ["Unexpected response shape used to test error handling - intentionally missing the 'results' key."]
+}

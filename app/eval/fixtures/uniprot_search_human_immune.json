@@ -1,0 +1,149 @@
+{
+  "results": [
+    {
+      "entryType": "UniProtKB reviewed (Swiss-Prot)",
+      "primaryAccession": "Q9NR00",
+      "uniProtkbId": "TCIM_HUMAN",
+      "organism": {
+        "scientificName": "Homo sapiens"
+      },
+      "proteinDescription": {
+        "recommendedName": {
+          "fullName": {
+            "value": "Transcriptional and immune response regulator"
+          }
+        }
+      },
+      "comments": [
+        {
+          "commentType": "FUNCTION",
+          "texts": [
+            {
+              "value": "Seems to be involved in the regulation of cell growth an differentiation, may play different and opposite roles depending on the tissue or cell type. May enhance the WNT-CTNNB1 pathway by relieving antagonistic activity of CBY1 (PubMed:16424001, PubMed:16730711). Enhances the proliferation of follicular dendritic cells (PubMed:16730711). Plays a role in the mitogen-activated MAPK2/3 signaling pathway, positively regulates G1-to-S-phase transition of the cell cycle (PubMed:18959821). In endothelial cells, enhances key inflammatory mediators and inflammatory response through the modulation of NF-kappaB transcriptional regulatory activity (PubMed:19684084). Involved in the regulation of heat shock response, seems to play a positive feedback with HSF1 to modulate heat-shock downstream gene expression (PubMed:17603013). Plays a role in the regulation of hematopoiesis even if the mechanisms are unknown (By similarity). In cancers such as thyroid or lung cancer, it has been described as promoter of cell proliferation, G1-to-S-phase transition and inhibitor of apoptosis (PubMed:15087392, PubMed:24941347). However, it negatively regulates self-renewal of liver cancer cells via suppresion of NOTCH2 signaling (PubMed:25985737)"
+            }
+          ]
+        }
+      ],
+      "sequence": {
+        "value": "MKAKRSHQAVIMSTSLRVSPSIHGYHFDTASRKKAVGNIFENTDQESLERLFRNSGDKKAEERAKIIFAIDQDVEEKTRALMALKKRTKDKLFQFLKLRKYSIKVH",
+        "length": 106
+      }
+    },
+    {
+      "entryType": "UniProtKB reviewed (Swiss-Prot)",
+      "primaryAccession": "P01579",
+      "uniProtkbId": "IFNG_HUMAN",
+      "organism": {
+        "scientificName": "Homo sapiens"
+      },
+      "proteinDescription": {
+        "recommendedName": {
+          "fullName": {
+            "value": "Interferon gamma"
+          }
+        }
+      },
+      "comments": [
+        {
+          "commentType": "FUNCTION",
+          "texts": [
+            {
+              "value": "Type II interferon produced by immune cells such as T-cells and NK cells that plays crucial roles in antimicrobial, antiviral, and antitumor responses by activating effector immune cells and enhancing antigen presentation (PubMed:16914093, PubMed:8666937). Primarily signals through the JAK-STAT pathway after interaction with its receptor IFNGR1 to affect gene regulation (PubMed:8349687). Upon IFNG binding, IFNGR1 intracellular domain opens out to allow association of downstream signaling components JAK2, JAK1 and STAT1, leading to STAT1 activation, nuclear translocation and transcription of IFNG-regulated genes. Many of the induced genes are transcription factors such as IRF1 that are able to further drive regulation of a next wave of transcription (PubMed:16914093). Plays a role in class I antigen presentation pathway by inducing a replacement of catalytic proteasome subunits with immunoproteasome subunits (PubMed:8666937). In turn, increases the quantity, quality, and repertoire of peptides for class I MHC loading (PubMed:8163024). Increases the efficiency of peptide generation also by inducing the expression of activator PA28 that associates with the proteasome and alters its proteolytic cleavage preference (PubMed:11112687). Up-regulates as well MHC II complexes on the cell surface by promoting expression of several key molecules such as cathepsins B/CTSB, H/CTSH, and L/CTSL (PubMed:7729559). Participates in the regulation of hematopoietic stem cells during development and under homeostatic conditions by affecting their development, quiescence, and differentiation (By similarity)"
+            }
+          ]
+        }
+      ],
+      "sequence": {
+        "value": "MKYTSYILAFQLCIVLGSLGCYCQDPYVKEAENLKKYFNAGHSDVADNGTLFLGILKNWKEESDRKIMQSQIVSFYFKLFKNFKDDQSIQKSVETIKEDMNVKFFNSNKKKRDDFEKLTNYSVTDLNVQRKAIHELIQVMAELSPAAKTGKRKRSQMLFRGRRASQ",
+        "length": 166
+      }
+    },
+    {
+      "entryType": "UniProtKB reviewed (Swiss-Prot)",
+      "primaryAccession": "Q9BZL6",
+      "uniProtkbId": "KPCD2_HUMAN",
+      "organism": {
+        "scientificName": "Homo sapiens"
+      },
+      "proteinDescription": {
+        "recommendedName": {
+          "fullName": {
+            "value": "Serine/threonine-protein kinase D2"
+          }
+        }
+      },
+      "comments": [
+        {
+          "commentType": "FUNCTION",
+          "texts": [
+            {
+              "value": "Serine/threonine-protein kinase that converts transient diacylglycerol (DAG) signals into prolonged physiological effects downstream of PKC, and is involved in the regulation of cell proliferation via MAPK1/3 (ERK1/2) signaling, oxidative stress-induced NF-kappa-B activation, inhibition of HDAC7 transcriptional repression, signaling downstream of T-cell antigen receptor (TCR) and cytokine production, and plays a role in Golgi membrane trafficking, angiogenesis, secretory granule release and cell adhesion (PubMed:14743217, PubMed:15604256, PubMed:16928771, PubMed:17077180, PubMed:17951978, PubMed:17962809, PubMed:18262756, PubMed:19001381, PubMed:19192391, PubMed:23503467, PubMed:28428613). May potentiate mitogenesis induced by the neuropeptide bombesin by mediating an increase in the duration of MAPK1/3 (ERK1/2) signaling, which leads to accumulation of immediate-early gene products including FOS that stimulate cell cycle progression (By similarity). In response to oxidative stress, is phosphorylated at Tyr-438 and Tyr-717 by ABL1, which leads to the activation of PRKD2 without increasing its catalytic activity, and mediates activation of NF-kappa-B (PubMed:15604256, PubMed:28428613). In response to the activation of the gastrin receptor CCKBR, is phosphorylated at Ser-244 by CSNK1D and CSNK1E, translocates to the nucleus, phosphorylates HDAC7, leading to nuclear export of HDAC7 and inhibition of HDAC7 transcriptional repression of NR4A1/NUR77 (PubMed:17962809). Upon TCR stimulation, is activated independently of ZAP70, translocates from the cytoplasm to the nucleus and is required for interleukin-2 (IL2) promoter up-regulation (PubMed:17077180). During adaptive immune responses, is required in peripheral T-lymphocytes for the production of the effector cytokines IL2 and IFNG after TCR engagement and for optimal induction of antibody responses to antigens (By similarity). In epithelial cells stimulated with lysophosphatidic acid (LPA), is activated through a PKC-dependent pathway and mediates LPA-stimulated interleukin-8 (IL8) secretion via a NF-kappa-B-dependent pathway (PubMed:16928771). During TCR-induced T-cell activation, interacts with and is activated by the tyrosine kinase LCK, which results in the activation of the NFAT transcription factors (PubMed:19192391). In the trans-Golgi network (TGN), regulates the fission of transport vesicles that are on their way to the plasma membrane and in polarized cells is involved in the transport of proteins from the TGN to the basolateral membrane (PubMed:14743217). Plays an important role in endothelial cell proliferation and migration prior to angiogenesis, partly through modulation of the expression of KDR/VEGFR2 and FGFR1, two key growth factor receptors involved in angiogenesis (PubMed:19001381). In secretory pathway, is required for the release of chromogranin-A (CHGA)-containing secretory granules from the TGN (PubMed:18262756). Downstream of PRKCA, plays important roles in angiotensin-2-induced monocyte adhesion to endothelial cells (PubMed:17951978). Plays a regulatory role in angiogenesis and tumor growth by phosphorylating a downstream mediator CIB1 isoform 2, resulting in vascular endothelial growth factor A (VEGFA) secretion (PubMed:23503467)"
+            }
+          ]
+        }
+      ],
+      "sequence": {
+        "value": "MATAPSYPAGLPGSPGPGSPPPPGGLELQSPPPLLPQIPAPGSGVSFHIQIGLTREFVLLPAASELAHVKQLACSIVDQKFPECGFYGLYDKILLFKHDPTSANLLQLVRSSGDIQEGDLVEVVLSASATFEDFQIRPHALTVHSYRAPAFCDHCGEMLFGLVRQGLKCDGCGLNYHKRCAFSIPNNCSGARKRRLSSTSLASGHSVRLGTSESLPCTAEELSRSTTELLPRRPPSSSSSSSASSYTGRPIELDKMLLSKVKVPHTFLIHSYTRPTVCQACKKLLKGLFRQGLQCKDCKFNCHKRCATRVPNDCLGEALINGDVPMEEATDFSEADKSALMDESEDSGVIPGSHSENALHASEEEEGEGGKAQSSLGYIPLMRVVQSVRHTTRKSSTTLREGWVVHYSNKDTLRKRHYWRLDCKCITLFQNNTTNRYYKEIPLSEILTVESAQNFSLVPPGTNPHCFEIVTANATYFVGEMPGGTPGGPSGQGAEAARGWETAIRQALMPVILQDAPSAPGHAPHRQASLSISVSNSQIQENVDIATVYQIFPDEVLGSGQFGVVYGGKHRKTGRDVAVKVIDKLRFPTKQESQLRNEVAILQSLRHPGIVNLECMFETPEKVFVVMEKLHGDMLEMILSSEKGRLPERLTKFLITQILVALRHLHFKNIVHCDLKPENVLLASADPFPQVKLCDFGFARIIGEKSFRRSVVGTPAYLAPEVLLNQGYNRSLDMWSVGVIMYVSLSGTFPFNEDEDINDQIQNAAFMYPASPWSHISAGAIDLINNLLQVKMRKRYSVDKSLSHPWLQEYQTWLDLRELEGKMGERYITHESDDARWEQFAAEHPLPGSGLPTDRDLGGACPPQDHDMQGLAERISVL",
+        "length": 878
+      }
+    },
+    {
+      "entryType": "UniProtKB reviewed (Swiss-Prot)",
+      "primaryAccession": "Q16566",
+      "uniProtkbId": "KCC4_HUMAN",
+      "organism": {
+        "scientificName": "Homo sapiens"
+      },
+      "proteinDescription": {
+        "recommendedName": {
+          "fullName": {
+            "value": "Calcium/calmodulin-dependent protein kinase type IV"
+          }
+        }
+      },
+      "comments": [
+        {
+          "commentType": "FUNCTION",
+          "texts": [
+            {
+              "value": "Calcium/calmodulin-dependent protein kinase that operates in the calcium-triggered CaMKK-CaMK4 signaling cascade and regulates, mainly by phosphorylation, the activity of several transcription activators, such as CREB1, MEF2D, JUN and RORA, which play pivotal roles in immune response, inflammation, and memory consolidation. In the thymus, regulates the CD4(+)/CD8(+) double positive thymocytes selection threshold during T-cell ontogeny. In CD4 memory T-cells, is required to link T-cell antigen receptor (TCR) signaling to the production of IL2, IFNG and IL4 (through the regulation of CREB and MEF2). Regulates the differentiation and survival phases of osteoclasts and dendritic cells (DCs). Mediates DCs survival by linking TLR4 and the regulation of temporal expression of BCL2. Phosphorylates the transcription activator CREB1 on 'Ser-133' in hippocampal neuron nuclei and contribute to memory consolidation and long term potentiation (LTP) in the hippocampus. Can activate the MAP kinases MAPK1/ERK2, MAPK8/JNK1 and MAPK14/p38 and stimulate transcription through the phosphorylation of ELK1 and ATF2. Can also phosphorylate in vitro CREBBP, PRM2, MEF2A and STMN1/OP18"
+            }
+          ]
+        }
+      ],
+      "sequence": {
+        "value": "MLKVTVPSCSASSCSSVTASAAPGTASLVPDYWIDGSNRDALSDFFEVESELGRGATSIVYRCKQKGTQKPYALKVLKKTVDKKIVRTEIGVLLRLSHPNIIKLKEIFETPTEISLVLELVTGGELFDRIVEKGYYSERDAADAVKQILEAVAYLHENGIVHRDLKPENLLYATPAPDAPLKIADFGLSKIVEHQVLMKTVCGTPGYCAPEILRGCAYGPEVDMWSVGIITYILLCGFEPFYDERGDQFMFRRILNCEYYFISPWWDEVSLNAKDLVRKLIVLDPKKRLTTFQALQHPWVTGKAANFVHMDTAQKKLQEFNARRKLKAAVKAVVASSRLGSASSSHGSIQESHKASRDPSPIQDGNEDMKAIPEGEKIQGDGAQAAVKGAQAELMKVQALEKVKGADINAEEAPKMVPKAVEDGIKVADLELEEGLAEEKLKTVEEAAAPREGQGSSAVGFEVPQQDVILPEY",
+        "length": 473
+      }
+    },
+    {
+      "entryType": "UniProtKB reviewed (Swiss-Prot)",
+      "primaryAccession": "P32121",
+      "uniProtkbId": "ARRB2_HUMAN",
+      "organism": {
+        "scientificName": "Homo sapiens"
+      },
+      "proteinDescription": {
+        "recommendedName": {
+          "fullName": {
+            "value": "Beta-arrestin-2"
+          }
+        }
+      },
+      "comments": [
+        {
+          "commentType": "FUNCTION",
+          "texts": [
+            {
+              "value": "Functions in regulating agonist-mediated G protein-coupled receptor (GPCR) signaling by mediating both receptor desensitization and resensitization processes (PubMed:16179383, PubMed:37209686, PubMed:38175886, PubMed:40384633). During homologous desensitization, beta-arrestins bind to the GPCR-phosphorylated receptor and sterically preclude its coupling to the cognate G protein; the binding appears to require additional receptor determinants exposed only in the active receptor conformation (PubMed:16179383, PubMed:37209686, PubMed:38175886, PubMed:40384633). The beta-arrestins target many receptors for internalization by acting as endocytic adapters (CLASPs, clathrin-associated sorting proteins) and recruiting the GPRCs to the adapter protein 2 complex 2 (AP-2) in clathrin-coated pits (CCPs). However, the extent of beta-arrestin involvement appears to vary significantly depending on the receptor, agonist and cell type. Internalized arrestin-receptor complexes traffic to intracellular endosomes, where they remain uncoupled from G proteins. Two different modes of arrestin-mediated internalization occur. Class A receptors, like ADRB2, OPRM1, ENDRA, D1AR and ADRA1B dissociate from beta-arrestin at or near the plasma membrane and undergo rapid recycling. Class B receptors, like AVPR2, AGTR1, NTSR1, TRHR and TACR1 internalize as a complex with arrestin and traffic with it to endosomal vesicles, presumably as desensitized receptors, for extended periods of time. Receptor resensitization then requires that receptor-bound arrestin is removed so that the receptor can be dephosphorylated and returned to the plasma membrane. Mediates endocytosis of CCR7 following ligation of CCL19 but not CCL21. Involved in internalization of P2RY1, P2RY4, P2RY6 and P2RY11 and ATP-stimulated internalization of P2RY2. Involved in phosphorylation-dependent internalization of OPRD1 and subsequent recycling or degradation. Involved in ubiquitination of IGF1R. Beta-arrestins function as multivalent adapter proteins that can switch the GPCR from a G protein signaling mode that transmits short-lived signals from the plasma membrane via small molecule second messengers and ion channels to a beta-arrestin signaling mode that transmits a distinct set of signals that are initiated as the receptor internalizes and transits the intracellular compartment. Acts as a signaling scaffold for MAPK pathways such as MAPK1/3 (ERK1/2) and MAPK10 (JNK3). ERK1/2 and JNK3 activated by the beta-arrestin scaffold are largely excluded from the nucleus and confined to cytoplasmic locations such as endocytic vesicles, also called beta-arrestin signalosomes. Acts as a signaling scaffold for the AKT1 pathway. GPCRs for which the beta-arrestin-mediated signaling relies on both ARRB1 and ARRB2 (codependent regulation) include ADRB2, F2RL1 and PTH1R. For some GPCRs the beta-arrestin-mediated signaling relies on either ARRB1 or ARRB2 and is inhibited by the other respective beta-arrestin form (reciprocal regulation). Increases ERK1/2 signaling in AGTR1- and AVPR2-mediated activation (reciprocal regulation). Involved in CCR7-mediated ERK1/2 signaling involving ligand CCL19. Is involved in type-1A angiotensin II receptor/AGTR1-mediated ERK activity. Is involved in type-1A angiotensin II receptor/AGTR1-mediated MAPK10 activity. Is involved in dopamine-stimulated AKT1 activity in the striatum by disrupting the association of AKT1 with its negative regulator PP2A. Involved in AGTR1-mediated chemotaxis. Appears to function as signaling scaffold involved in regulation of MIP-1-beta-stimulated CCR5-dependent chemotaxis. Involved in attenuation of NF-kappa-B-dependent transcription in response to GPCR or cytokine stimulation by interacting with and stabilizing CHUK. Suppresses UV-induced NF-kappa-B-dependent activation by interacting with CHUK. The function is promoted by stimulation of ADRB2 and dephosphorylation of ARRB2. Involved in p53/TP53-mediated apoptosis by regulating MDM2 and reducing the MDM2-mediated degradation of p53/TP53. May serve as nuclear messenger for GPCRs. Upon stimulation of OR1D2, may be involved in regulation of gene expression during the early processes of fertilization. Also involved in regulation of receptors other than GPCRs. Involved in endocytosis of TGFBR2 and TGFBR3 and down-regulates TGF-beta signaling such as NF-kappa-B activation. Involved in endocytosis of low-density lipoprotein receptor/LDLR. Involved in both localization to primary cilium and endocytosis of smoothened (SMO) in a GRK2-dependent process (PubMed:15618519). Involved in endocytosis of SLC9A5. Involved in endocytosis of ENG and subsequent TGF-beta-mediated ERK activation and migration of epithelial cells. Involved in Toll-like receptor and IL-1 receptor signaling through the interaction with TRAF6 which prevents TRAF6 autoubiquitination and oligomerization required for activation of NF-kappa-B and JUN (PubMed:26839314). Involved in insulin resistance by acting as insulin-induced signaling scaffold for SRC, AKT1 and INSR. Involved in regulation of inhibitory signaling of natural killer cells by recruiting PTPN6 and PTPN11 to KIR2DL1. Involved in IL8-mediated granule release in neutrophils. Involved in the internalization of the atypical chemokine receptor ACKR3. Acts as an adapter protein coupling FFAR4 receptor to specific downstream signaling pathways, as well as mediating receptor endocytosis (PubMed:22282525, PubMed:23809162). During the activation step of NLRP3 inflammasome, directly associates with NLRP3 leading to inhibition of pro-inflammatory cytokine release and inhibition of inflammation (PubMed:23809162)"
+            }
+          ]
+        }
+      ],
+      "sequence": {
+        "value": "MGEKPGTRVFKKSSPNCKLTVYLGKRDFVDHLDKVDPVDGVVLVDPDYLKDRKVFVTLTCAFRYGREDLDVLGLSFRKDLFIATYQAFPPVPNPPRPPTRLQDRLLRKLGQHAHPFFFTIPQNLPCSVTLQPGPEDTGKACGVDFEIRAFCAKSLEEKSHKRNSVRLVIRKVQFAPEKPGPQPSAETTRHFLMSDRSLHLEASLDKELYYHGEPLNVNVHVTNNSTKTVKKIKVSVRQYADICLFSTAQYKCPVAQLEQDDQVSPSSTFCKVYTITPLLSDNREKRGLALDGKLKHEDTNLASSTIVKEGANKEVLGILVSYRVKVKLVVSRGGDVSVELPFVLMHPKPHDHIPLPRPQSAAPETDVPVDTNLIEFDTNYATDDDIVFEDFARLRLKGMKDDDYDDQLC",
+        "length": 409
+      }
+    }
+  ]
+}

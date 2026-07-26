@@ -1,0 +1,29 @@
+{
+  "entryType": "UniProtKB reviewed (Swiss-Prot)",
+  "primaryAccession": "P69905",
+  "uniProtkbId": "HBA_HUMAN",
+  "organism": {
+    "scientificName": "Homo sapiens"
+  },
+  "proteinDescription": {
+    "recommendedName": {
+      "fullName": {
+        "value": "Hemoglobin subunit alpha"
+      }
+    }
+  },
+  "comments": [
+    {
+      "commentType": "FUNCTION",
+      "texts": [
+        {
+          "value": "Involved in oxygen transport from the lung to the various peripheral tissues"
+        }
+      ]
+    }
+  ],
+  "sequence": {
+    "value": "MVLSPADKTNVKAAWGKVGAHAGEYGAEALERMFLSFPTTKTYFPHFDLSHGSAQVKGHGKKVADALTNAVAHVDDMPNALSALSDLHAHKLRVDPVNFKLLSHCLLVTLAAHLPAEFTPAVHASLDKFLASVSTVLTSKYR",
+    "length": 142
+  }
+}
