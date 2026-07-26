@@ -5,6 +5,11 @@ export interface ChatRequest {
   message: string
 }
 
+export interface FoldRequest {
+  sequence: string
+  name?: string | null
+}
+
 export interface ProteinHit {
   accession: string
   protein_name: string | null

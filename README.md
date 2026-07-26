@@ -28,6 +28,9 @@ client) over rebuilding a private protein database from scratch.
 5. You get back a natural-language `reply` plus the structured, labeled
    data - and can fetch any predicted structure's PDB text from
    `GET /structures/{structure_id}` for 3D visualization.
+6. Separately from the chat loop, `POST /fold` lets the frontend (or any
+   client) fold an arbitrary sequence on demand - used so a retrieved
+   search hit can be viewed in 3D without asking the agent to fold it.
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for the full design, the candidate
 schema, and the reliability rationale.
@@ -77,6 +80,7 @@ cp .env.example .env
 | `UNIPROT_BASE_URL` | UniProt REST API base (free, keyless). | `https://rest.uniprot.org` |
 | `DEFAULT_RESULT_SIZE` | Default number of search hits when the user doesn't specify a count. | `5` |
 | `SESSION_TTL_SECONDS` | In-memory session lifetime. | `3600` |
+| `FRONTEND_ORIGIN` | Allowed CORS origin for the React panel (credentials enabled). | `http://localhost:5173` |
 | `EVAL_LIVE` | `0` = smoke eval uses recorded UniProt/BioLM fixtures; `1` = hits the real APIs. | `0` |
 
 ## Running the server
@@ -102,7 +106,22 @@ curl http://localhost:8000/liveness
 ```
 
 For manual API checks (sample request bodies, session cookies, response
-field shapes, and `/structures/{id}`), see [TESTING.md](TESTING.md).
+field shapes, `/fold`, and `/structures/{id}`), see [TESTING.md](TESTING.md).
+
+## Running the frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Opens on `http://localhost:5173`. In dev, Vite proxies `/chat`, `/fold`,
+`/structures/*`, and `/liveness` to the backend so the session cookie is
+same-origin. The panel accumulates retrieved proteins and candidates across
+turns; candidate structures come from the agent's auto-fold, while each
+retrieved-protein card has a "Fold & view 3D structure" button that calls
+`POST /fold` directly. Details in [frontend/README.md](frontend/README.md).
 
 ## Testing
 
@@ -139,9 +158,9 @@ UniProt and BioLM APIs.
 
 ```
 app/
-  main.py              FastAPI app: POST /chat, GET /structures/{id}, GET /liveness
+  main.py              FastAPI app: POST /chat, POST /fold, GET /structures/{id}, GET /liveness
   config.py            Environment-based configuration + validation
-  models.py            Pydantic schemas (ChatRequest/Response, ProteinHit, Candidate, ...)
+  models.py            Pydantic schemas (ChatRequest/Response, FoldRequest, ProteinHit, Candidate, ...)
   session.py           In-memory, cookie-backed session store
   structure_cache.py   In-memory {structure_id: pdb_text} cache
   agent/
@@ -157,11 +176,14 @@ app/
   eval/
     smoke_eval.py       5-case integration smoke eval
     fixtures/           Recorded UniProt/BioLM responses used by tests + smoke eval
+frontend/              React + Vite + TypeScript + Tailwind panel (chat + protein/candidate
+                       panels + Mol* 3D viewer; see frontend/README.md)
 ```
 
 ## Status
 
-Backend prototype with a React frontend panel in `frontend/` (see
-`frontend/README.md` to run it). See [ARCHITECTURE.md](ARCHITECTURE.md)
-for the full design and "Future work" (ProteinMPNN as the planned next
-generation method).
+Backend prototype with a React frontend panel in `frontend/` (chat,
+accumulated proteins/candidates, Mol* 3D viewer, on-demand fold for
+retrieved proteins via `POST /fold`). See
+[ARCHITECTURE.md](ARCHITECTURE.md) for the full design and "Future work"
+(ProteinMPNN as the planned next generation method).

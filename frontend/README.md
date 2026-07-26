@@ -20,7 +20,7 @@ npm install
 npm run dev
 ```
 
-Opens on `http://localhost:5173`. In dev, Vite proxies `/chat`,
+Opens on `http://localhost:5173`. In dev, Vite proxies `/chat`, `/fold`,
 `/structures/*`, and `/liveness` to `http://127.0.0.1:8000` (see
 `vite.config.ts`), so the app can use relative fetch paths and the
 session cookie is treated as same-origin. Override the backend target with
@@ -69,4 +69,9 @@ Notes:
   persisted to `localStorage` so a page refresh doesn't lose them.
 - All interaction happens through the chat input - protein/candidate cards
   are read-only (no quick-action buttons that auto-send messages) by
-  design for this version.
+  design for this version, with one exception: each retrieved-protein card
+  has a "Fold & view 3D structure" button that calls `POST /fold` directly
+  (bypassing the chat/agent loop) so the user can inspect a search hit's
+  structure without asking the agent to fold it. That result lives only in
+  the card's own component state - it is not merged into the accumulated
+  `retrieved_proteins` list or persisted to `localStorage`.

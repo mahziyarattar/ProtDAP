@@ -12,17 +12,18 @@ import asyncio
 import logging
 from contextlib import asynccontextmanager
 
-from fastapi import FastAPI, Request, Response
+from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import PlainTextResponse
 
 from app.agent.assembler import assemble_response, summarize_trace
 from app.agent.graph import run_agent
 from app.config import config
-from app.models import ChatRequest, ChatResponse
+from app.models import ChatRequest, ChatResponse, FoldRequest, StructureInfo
 from app.session import SESSION_COOKIE_NAME, get_session_store
 from app.structure_cache import get_structure
 from app.tools.biolm_mcp import get_biolm_client
+from app.tools.generation import VALID_AMINO_ACIDS
 
 logger = logging.getLogger("protdap")
 
@@ -120,6 +121,32 @@ async def chat(chat_request: ChatRequest, request: Request, response: Response) 
         retrieved_proteins=retrieved_proteins,
         candidates=candidates,
         tool_trace_summary=tool_trace_summary,
+    )
+
+
+@app.post("/fold", response_model=StructureInfo)
+async def fold_route(fold_request: FoldRequest) -> StructureInfo:
+    """On-demand fold of an arbitrary sequence, outside the chat/agent loop
+    and outside any session - used by the frontend to let the user fold a
+    retrieved (non-candidate) protein directly. The result is not stored
+    server-side beyond the structure cache backing GET /structures/{id};
+    it is not attached to any conversation's retrieved_proteins/candidates."""
+    sequence = "".join(fold_request.sequence.split()).upper()
+    if len(sequence) < 10 or any(residue not in VALID_AMINO_ACIDS for residue in sequence):
+        raise HTTPException(
+            status_code=400,
+            detail="sequence must be at least 10 residues of valid amino acid letters.",
+        )
+
+    biolm_client = get_biolm_client(config.biolm_token)
+    fold_result = await biolm_client.fold_sequence(
+        sequence=sequence, name=fold_request.name or "protein"
+    )
+    return StructureInfo(
+        available=bool(fold_result.get("structure_available")),
+        mean_plddt=fold_result.get("mean_plddt"),
+        model_source=fold_result.get("model_source"),
+        structure_id=fold_result.get("structure_id"),
     )
 
 

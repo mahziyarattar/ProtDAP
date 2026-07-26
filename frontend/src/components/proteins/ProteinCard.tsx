@@ -1,4 +1,7 @@
-import type { ProteinHit } from '../../api/types'
+import { useState } from 'react'
+import { ApiError, foldSequence } from '../../api/client'
+import type { ProteinHit, StructureInfo } from '../../api/types'
+import { StructureViewer } from '../structure/StructureViewer'
 
 interface ProteinCardProps {
   protein: ProteinHit
@@ -6,9 +9,44 @@ interface ProteinCardProps {
 
 const FUNCTION_PREVIEW_LENGTH = 160
 
+type FoldState = 'idle' | 'loading' | 'ready' | 'error'
+
 export function ProteinCard({ protein }: ProteinCardProps) {
   const functionText = protein.function ?? ''
   const isLongFunction = functionText.length > FUNCTION_PREVIEW_LENGTH
+
+  // On-demand fold state, kept purely client-side (see POST /fold in
+  // app/main.py) - never sent to the backend session, never merged with
+  // retrieved_proteins from a /chat response.
+  const [foldState, setFoldState] = useState<FoldState>('idle')
+  const [structureInfo, setStructureInfo] = useState<StructureInfo | null>(null)
+  const [foldError, setFoldError] = useState<string | null>(null)
+  const [showStructure, setShowStructure] = useState(false)
+
+  async function handleFoldClick() {
+    if (foldState === 'ready') {
+      setShowStructure((prev) => !prev)
+      return
+    }
+    if (!protein.sequence || foldState === 'loading') return
+
+    setFoldState('loading')
+    setFoldError(null)
+    try {
+      const result = await foldSequence(protein.sequence, protein.accession)
+      setStructureInfo(result)
+      if (result.available && result.structure_id) {
+        setFoldState('ready')
+        setShowStructure(true)
+      } else {
+        setFoldState('error')
+        setFoldError(result.model_source ?? 'Folding did not produce a structure.')
+      }
+    } catch (error) {
+      setFoldState('error')
+      setFoldError(error instanceof ApiError ? error.message : String(error))
+    }
+  }
 
   return (
     <div className="rounded-lg border border-slate-200 bg-white p-3 text-sm">
@@ -51,6 +89,37 @@ export function ProteinCard({ protein }: ProteinCardProps) {
             functionText
           )}
         </p>
+      )}
+
+      {protein.sequence && (
+        <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-600">
+          {structureInfo?.mean_plddt != null && (
+            <span>
+              pLDDT: <span className="font-medium text-slate-800">{structureInfo.mean_plddt.toFixed(1)}</span>
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={handleFoldClick}
+            disabled={foldState === 'loading'}
+            className="text-indigo-600 hover:underline disabled:cursor-wait disabled:text-slate-400 disabled:no-underline"
+          >
+            {foldState === 'idle' && 'Fold & view 3D structure'}
+            {foldState === 'loading' && 'Folding… (~30s)'}
+            {foldState === 'ready' && (showStructure ? 'Hide structure' : 'View 3D structure')}
+            {foldState === 'error' && 'Retry fold'}
+          </button>
+        </div>
+      )}
+
+      {foldState === 'error' && foldError && (
+        <p className="mt-1 text-xs text-red-600">{foldError}</p>
+      )}
+
+      {showStructure && structureInfo?.structure_id && (
+        <div className="mt-2">
+          <StructureViewer structureId={structureInfo.structure_id} />
+        </div>
       )}
     </div>
   )

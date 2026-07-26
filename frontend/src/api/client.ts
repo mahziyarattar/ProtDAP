@@ -1,4 +1,4 @@
-import type { ChatResponse, LivenessResponse } from './types'
+import type { ChatResponse, LivenessResponse, StructureInfo } from './types'
 
 // Relative paths, proxied to the FastAPI backend by Vite in dev (see
 // vite.config.ts) so the browser treats these as same-origin requests and
@@ -40,6 +40,25 @@ export async function postChat(message: string): Promise<ChatResponse> {
   }
 
   return (await response.json()) as ChatResponse
+}
+
+// On-demand fold for a retrieved (non-candidate) protein, bypassing the
+// chat/agent loop entirely (see POST /fold in app/main.py). The result is
+// kept purely in frontend component state - it is never sent back to the
+// backend session or merged into the conversation store.
+export async function foldSequence(sequence: string, name?: string): Promise<StructureInfo> {
+  const response = await fetch('/fold', {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ sequence, name }),
+  })
+
+  if (!response.ok) {
+    throw new ApiError(response.status, await parseErrorBody(response))
+  }
+
+  return (await response.json()) as StructureInfo
 }
 
 export function getStructureUrl(structureId: string): string {

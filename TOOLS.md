@@ -342,7 +342,10 @@ full candidate and typically gets `score=null`.
 
 ## 4. Structure cache (`app/structure_cache.py`)
 
-Not an agent tool; used by `fold_sequence` and `GET /structures/{id}`.
+Not an agent tool; used by `fold_sequence`, `POST /fold` (a stateless,
+session-independent HTTP endpoint in `app/main.py` that lets the frontend
+fold an arbitrary sequence - e.g. a retrieved protein - without going
+through the agent/chat loop at all), and `GET /structures/{id}`.
 
 ### `store_structure(pdb_text: str, name_hint: str = "structure") -> str`
 

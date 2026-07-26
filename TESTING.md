@@ -175,9 +175,32 @@ head -5 /tmp/pred.pdb
 
 ---
 
+## `POST /fold`
+
+Stateless, session-independent fold - no cookie needed, not tied to any
+`/chat` conversation. Used by the frontend to fold a retrieved protein
+on demand without going through the agent.
+
+```bash
+curl -s -X POST http://localhost:8000/fold \
+  -H 'Content-Type: application/json' \
+  -d '{"sequence": "MALWMRLLPLLALLALWGPDPAAAFVNQHLCGSHLVEALYLVCGERGFFYTPKT", "name": "insulin_test"}'
+```
+
+**Success (200):**
+```json
+{"available": true, "mean_plddt": 67.3, "model_source": "BioLM ESMFold", "structure_id": "insulin_test_..."}
+```
+
+**Invalid input (400):** `sequence` shorter than 10 residues, or containing
+characters outside the 20 standard amino acid letters.
+
+---
+
 ## Suggested smoke path
 
 1. `GET /liveness` → `"status": "ok"`.
 2. `POST /chat` with the search + diversify sample → non-empty `reply`, some `tool_trace_summary`, and usually `retrieved_proteins` and/or `candidates`.
 3. If any candidate has `structure.available: true`, `GET /structures/{structure_id}` → PDB text.
 4. Optional follow-up with the same `cookies.txt` → reply that reflects prior context.
+5. `POST /fold` with a real sequence → `available: true` and a `structure_id` that also resolves via `GET /structures/{structure_id}`.

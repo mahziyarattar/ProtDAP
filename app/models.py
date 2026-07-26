@@ -14,6 +14,15 @@ class ChatRequest(BaseModel):
     message: str
 
 
+class FoldRequest(BaseModel):
+    """Body for POST /fold - an on-demand fold that bypasses the chat/agent
+    loop entirely. Used by the frontend to let the user fold a retrieved
+    (non-candidate) protein directly, without going through the LLM."""
+
+    sequence: str
+    name: Optional[str] = None
+
+
 class ProteinHit(BaseModel):
     accession: str
     protein_name: Optional[str] = None

@@ -14,6 +14,7 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/chat': BACKEND_ORIGIN,
+      '/fold': BACKEND_ORIGIN,
       '/structures': BACKEND_ORIGIN,
       '/liveness': BACKEND_ORIGIN,
     },

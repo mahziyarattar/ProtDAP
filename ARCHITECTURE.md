@@ -152,6 +152,18 @@ Response:
 `GET /structures/{structure_id}` returns the raw PDB text (from the
 in-memory structure cache) for downstream 3D visualization (e.g. Mol*).
 
+`POST /fold` (`{"sequence": "...", "name": "..."}` -> `StructureInfo`) is a
+stateless, session-independent fold: it calls the same
+`BioLMMCPClient.fold_sequence` used inside the agent's `fold_sequence`
+tool, storing the resulting PDB in the same structure cache (so the
+returned `structure_id` also works with `GET /structures/{id}`), but it is
+not tied to a conversation, not added to any `retrieved_proteins`/
+`candidates` list, and does not go through the LLM at all. It exists so the
+frontend can let a user fold an arbitrary retrieved protein on demand
+(a plain button click) without a chat round-trip. `sequence` is validated
+to be at least 10 residues of valid amino acid letters before it is sent to
+BioLM (`400` otherwise).
+
 `GET /liveness` reports the result of the most recent BioLM MCP
 connectivity check (a one-off connect/handshake/close, not a persisted
 connection - see the note below).
@@ -187,8 +199,8 @@ binder design.
 
 A React + Vite + TypeScript + Tailwind panel lives in `frontend/` (see
 `frontend/README.md` for setup/run instructions), talking to this
-backend's `POST /chat`, `GET /structures/{id}`, and `GET /liveness`
-endpoints. Highlights:
+backend's `POST /chat`, `POST /fold`, `GET /structures/{id}`, and
+`GET /liveness` endpoints. Highlights:
 
 - Chat transcript in the center; side panels accumulate every
   `retrieved_proteins`/`candidates` entry seen across the whole
@@ -197,6 +209,11 @@ endpoints. Highlights:
 - Candidate sequences render with mutated residues inline-highlighted
   (position computed from `Candidate.modifications`, see the schema
   above), plus a Mol* 3D viewer for folded structures.
+- Retrieved (non-candidate) proteins get an on-demand "Fold & view 3D
+  structure" button that calls `POST /fold` directly - this is
+  per-card, client-only state (not part of the conversation store), since
+  folding a retrieved protein is a separate action from the chat/agent
+  flow and most search hits are never folded.
 - In dev, Vite proxies API calls to the backend so the session cookie is
   treated as same-origin; `app/main.py`'s `CORSMiddleware` (allowing
   `config.frontend_origin`, with credentials) covers the case of calling
