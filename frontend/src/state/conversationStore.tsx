@@ -33,7 +33,6 @@ type Action =
   | { type: 'send_start'; turn: Turn }
   | { type: 'send_success'; turn: Turn }
   | { type: 'send_error'; turn: Turn }
-  | { type: 'hydrate'; state: ConversationState }
   | { type: 'reset' }
 
 function dedupeByKey<T>(items: T[], keyOf: (item: T) => string): T[] {
@@ -52,25 +51,39 @@ function mergeCandidates(existing: Candidate[], incoming: Candidate[]): Candidat
   return dedupeByKey([...existing, ...incoming], (candidate) => candidate.sequence)
 }
 
+/** Recompute accumulated panels from per-turn payloads (source of truth). */
+function rebuildAccumulators(turns: Turn[]): Pick<
+  ConversationState,
+  'allRetrievedProteins' | 'allCandidates'
+> {
+  let allRetrievedProteins: ProteinHit[] = []
+  let allCandidates: Candidate[] = []
+  for (const turn of turns) {
+    if (turn.retrievedProteins?.length) {
+      allRetrievedProteins = mergeRetrievedProteins(allRetrievedProteins, turn.retrievedProteins)
+    }
+    if (turn.candidates?.length) {
+      allCandidates = mergeCandidates(allCandidates, turn.candidates)
+    }
+  }
+  return { allRetrievedProteins, allCandidates }
+}
+
 function reducer(state: ConversationState, action: Action): ConversationState {
   switch (action.type) {
     case 'send_start':
       return { ...state, turns: [...state.turns, action.turn], isSending: true }
-    case 'send_success':
+    case 'send_success': {
+      const turns = [...state.turns, action.turn]
       return {
         ...state,
-        turns: [...state.turns, action.turn],
-        allRetrievedProteins: mergeRetrievedProteins(
-          state.allRetrievedProteins,
-          action.turn.retrievedProteins ?? [],
-        ),
-        allCandidates: mergeCandidates(state.allCandidates, action.turn.candidates ?? []),
+        turns,
+        ...rebuildAccumulators(turns),
         isSending: false,
       }
+    }
     case 'send_error':
       return { ...state, turns: [...state.turns, action.turn], isSending: false }
-    case 'hydrate':
-      return action.state
     case 'reset':
       return initialState
     default:
@@ -83,7 +96,15 @@ function loadPersistedState(): ConversationState | null {
     const raw = localStorage.getItem(STORAGE_KEY)
     if (!raw) return null
     const parsed = JSON.parse(raw) as ConversationState
-    return { ...parsed, isSending: false }
+    const turns = Array.isArray(parsed.turns) ? parsed.turns : []
+    // Always rebuild panel lists from turns so a prior buggy persist that
+    // kept reply text but dropped allRetrievedProteins/allCandidates still
+    // restores the cards after refresh.
+    return {
+      turns,
+      ...rebuildAccumulators(turns),
+      isSending: false,
+    }
   } catch {
     return null
   }
@@ -102,6 +123,12 @@ function makeTurnId(): string {
   return `${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 }
 
+/** Lazy init from localStorage - avoids the empty-state persist race that
+ * wiped panel data on mount (especially under React Strict Mode). */
+function getInitialState(): ConversationState {
+  return loadPersistedState() ?? initialState
+}
+
 interface ConversationContextValue {
   turns: Turn[]
   allRetrievedProteins: ProteinHit[]
@@ -114,14 +141,7 @@ interface ConversationContextValue {
 const ConversationContext = createContext<ConversationContextValue | null>(null)
 
 export function ConversationProvider({ children }: { children: ReactNode }) {
-  const [state, dispatch] = useReducer(reducer, initialState)
-
-  useEffect(() => {
-    const persisted = loadPersistedState()
-    if (persisted) {
-      dispatch({ type: 'hydrate', state: persisted })
-    }
-  }, [])
+  const [state, dispatch] = useReducer(reducer, undefined, getInitialState)
 
   useEffect(() => {
     persistState(state)

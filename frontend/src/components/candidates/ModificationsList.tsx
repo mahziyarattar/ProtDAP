@@ -1,4 +1,5 @@
 import type { Modification } from '../../api/types'
+import { DirAuto, LtrIsolate } from '../ui/TextDirection'
 
 interface ModificationsListProps {
   modifications: Modification[]
@@ -23,11 +24,17 @@ export function ModificationsList({ modifications }: ModificationsListProps) {
         <tbody>
           {modifications.map((mod) => (
             <tr key={`${mod.position}-${mod.original}-${mod.new}`} className="align-top">
-              <td className="pr-2 py-0.5 font-mono">{mod.position}</td>
-              <td className="pr-2 py-0.5 font-mono">
-                {mod.original}&rarr;{mod.new}
+              <td className="py-0.5 pr-2 font-mono">
+                <LtrIsolate>{mod.position}</LtrIsolate>
               </td>
-              <td className="py-0.5 text-slate-500">{mod.reason ?? '—'}</td>
+              <td className="py-0.5 pr-2 font-mono">
+                <LtrIsolate>
+                  {mod.original}&rarr;{mod.new}
+                </LtrIsolate>
+              </td>
+              <td className="py-0.5 text-slate-500">
+                <DirAuto as="span">{mod.reason ?? '—'}</DirAuto>
+              </td>
             </tr>
           ))}
         </tbody>

@@ -1,12 +1,14 @@
-import { useState } from 'react'
 import type { Candidate } from '../../api/types'
-import { StructureViewer } from '../structure/StructureViewer'
+import { candidateStructureId, useStructures } from '../../state/structuresStore'
+import { DirAuto, LtrIsolate } from '../ui/TextDirection'
 import { ExportButtons } from './ExportButtons'
 import { ModificationsList } from './ModificationsList'
 import { SequenceView } from './SequenceView'
 
 interface CandidateCardProps {
   candidate: Candidate
+  /** Hide the Structures shortcut (e.g. when already inside the expanded Structures view). */
+  showViewInStructures?: boolean
 }
 
 function formatPercent(value: number | null): string {
@@ -14,9 +16,14 @@ function formatPercent(value: number | null): string {
   return `${Math.round(value * 100)}%`
 }
 
-export function CandidateCard({ candidate }: CandidateCardProps) {
-  const [showStructure, setShowStructure] = useState(false)
-  const structureId = candidate.structure.structure_id
+export function CandidateCard({
+  candidate,
+  showViewInStructures = true,
+}: CandidateCardProps) {
+  const { viewInStructures } = useStructures()
+  const canViewStructure =
+    Boolean(candidate.structure.available && candidate.structure.structure_id) ||
+    Boolean(candidate.sequence)
 
   return (
     <div className="rounded-lg border border-slate-200 bg-white p-3 text-sm">
@@ -38,22 +45,26 @@ export function CandidateCard({ candidate }: CandidateCardProps) {
       </div>
 
       {candidate.parent && (
-        <div className="mt-1.5 text-xs text-slate-500">
+        <DirAuto as="div" className="mt-1.5 text-xs text-slate-500">
           Parent:{' '}
           <span className="font-medium text-slate-700">
             {candidate.parent.protein_name ?? candidate.parent.accession ?? 'unknown'}
           </span>
           {candidate.parent.accession && (
-            <span className="ml-1 font-mono text-[11px]">({candidate.parent.accession})</span>
+            <LtrIsolate className="ml-1 font-mono text-[11px]">
+              ({candidate.parent.accession})
+            </LtrIsolate>
           )}
           {candidate.identity_to_parent !== null && (
-            <span className="ml-2">identity: {formatPercent(candidate.identity_to_parent)}</span>
+            <LtrIsolate className="ml-2">
+              identity: {formatPercent(candidate.identity_to_parent)}
+            </LtrIsolate>
           )}
-        </div>
+        </DirAuto>
       )}
 
       <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-600">
-        <span>
+        <LtrIsolate as="span">
           pLDDT:{' '}
           <span className="font-medium text-slate-800">
             {candidate.structure.mean_plddt !== null
@@ -62,31 +73,28 @@ export function CandidateCard({ candidate }: CandidateCardProps) {
                 ? '—'
                 : 'not folded'}
           </span>
-        </span>
+        </LtrIsolate>
         {candidate.esm1v_score !== null && (
-          <span>
-            ESM-1v: <span className="font-medium text-slate-800">{candidate.esm1v_score.toFixed(2)}</span>
-          </span>
+          <LtrIsolate as="span">
+            ESM-1v:{' '}
+            <span className="font-medium text-slate-800">{candidate.esm1v_score.toFixed(2)}</span>
+          </LtrIsolate>
         )}
-        {candidate.structure.available && structureId && (
+        {showViewInStructures && canViewStructure && (
           <button
             type="button"
-            onClick={() => setShowStructure((prev) => !prev)}
+            onClick={() => viewInStructures(candidateStructureId(candidate.sequence))}
             className="text-indigo-600 hover:underline"
           >
-            {showStructure ? 'Hide structure' : 'View 3D structure'}
+            View in Structures
           </button>
         )}
       </div>
 
-      {showStructure && structureId && (
-        <div className="mt-2">
-          <StructureViewer structureId={structureId} />
-        </div>
-      )}
-
       {candidate.explanation && (
-        <p className="mt-2 text-xs italic text-slate-500">{candidate.explanation}</p>
+        <DirAuto as="p" className="mt-2 text-xs italic text-slate-500">
+          {candidate.explanation}
+        </DirAuto>
       )}
 
       <div className="mt-2">

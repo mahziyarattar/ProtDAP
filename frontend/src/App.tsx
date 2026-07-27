@@ -1,10 +1,13 @@
 import { AppShell } from './components/layout/AppShell'
 import { ConversationProvider } from './state/conversationStore'
+import { StructuresProvider } from './state/structuresStore'
 
 function App() {
   return (
     <ConversationProvider>
-      <AppShell />
+      <StructuresProvider>
+        <AppShell />
+      </StructuresProvider>
     </ConversationProvider>
   )
 }

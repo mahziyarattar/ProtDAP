@@ -1,13 +1,72 @@
 @import "tailwindcss";
 
+@theme {
+  --font-sans:
+    "Vazirmatn", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+}
+
+/* Shared top-chrome heights so chat header lines up with right tabs + section title. */
+:root {
+  --protdap-right-tabs-height: 2.5rem; /* 40px */
+  --protdap-right-section-height: 2.25rem; /* 36px */
+  --protdap-chat-header-height: calc(
+    var(--protdap-right-tabs-height) + var(--protdap-right-section-height)
+  );
+}
+
+.protdap-chat-header {
+  height: var(--protdap-chat-header-height);
+}
+
+.protdap-right-tabs {
+  height: var(--protdap-right-tabs-height);
+}
+
+.protdap-right-section {
+  height: var(--protdap-right-section-height);
+}
+
 html,
 body,
 #root {
   height: 100%;
 }
 
+html {
+  /* Must be on html too: Tailwind preflight sets font-family here. */
+  font-family:
+    "Vazirmatn",
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+}
+
 body {
   @apply bg-slate-50 text-slate-900;
+  /* Vazirmatn first so Persian actually uses it. System fonts (e.g. SF Arabic)
+     already include Persian glyphs, so putting Vazirmatn last never applied. */
+  font-family:
+    "Vazirmatn",
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+}
+
+/* Keep sequences/codes on monospace (not Vazirmatn). */
+.ltr-isolate.font-mono,
+.font-mono {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 }
 
 /* Monospace, wrapping display for amino-acid sequences. */
@@ -15,4 +74,92 @@ body {
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
   word-break: break-all;
   line-height: 1.6;
+}
+
+/* Assistant/user chat bubble markdown (react-markdown). */
+.chat-markdown {
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.chat-markdown > :first-child {
+  margin-top: 0;
+}
+
+.chat-markdown > :last-child {
+  margin-bottom: 0;
+}
+
+.chat-markdown p {
+  margin: 0.5em 0;
+}
+
+.chat-markdown strong {
+  font-weight: 700;
+}
+
+.chat-markdown em {
+  font-style: italic;
+}
+
+.chat-markdown ul,
+.chat-markdown ol {
+  margin: 0.5em 0;
+  /* inline-start works for both LTR and RTL (dir=auto Persian replies). */
+  padding-inline-start: 2.5rem;
+  padding-inline-end: 0.5rem;
+}
+
+.chat-markdown li {
+  margin: 0.2em 0;
+}
+
+.chat-markdown ul {
+  list-style-type: disc;
+}
+
+.chat-markdown ol {
+  list-style-type: decimal;
+}
+
+.chat-markdown code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.9em;
+  padding: 0.1em 0.35em;
+  border-radius: 0.25rem;
+  background: rgb(241 245 249);
+}
+
+.chat-markdown pre {
+  margin: 0.5em 0;
+  padding: 0.6em 0.75em;
+  overflow-x: auto;
+  border-radius: 0.5rem;
+  background: rgb(241 245 249);
+}
+
+.chat-markdown pre code {
+  padding: 0;
+  background: transparent;
+}
+
+.chat-markdown a {
+  color: rgb(79 70 229);
+  text-decoration: underline;
+}
+
+.chat-markdown-user code,
+.chat-markdown-user pre {
+  background: rgb(67 56 202 / 0.45);
+}
+
+.chat-markdown-user a {
+  color: white;
+}
+
+/* Keep codes/accessions/sequences visually LTR inside RTL paragraphs. */
+.ltr-isolate {
+  unicode-bidi: isolate;
+  direction: ltr;
+  display: inline;
 }

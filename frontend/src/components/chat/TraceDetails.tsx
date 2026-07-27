@@ -10,9 +10,9 @@ export function TraceDetails({ traceSummary }: TraceDetailsProps) {
       <summary className="cursor-pointer select-none hover:text-slate-700">
         Tool trace ({traceSummary.length} call{traceSummary.length === 1 ? '' : 's'})
       </summary>
-      <ul className="mt-1 space-y-0.5 pl-4 font-mono">
+      <ul className="mt-1 space-y-0.5 pl-4 font-mono" dir="ltr">
         {traceSummary.map((line, index) => (
-          <li key={index} className="list-disc">
+          <li key={index} className="list-disc ltr-isolate">
             {line}
           </li>
         ))}

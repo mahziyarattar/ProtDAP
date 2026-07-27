@@ -118,10 +118,10 @@ npm run dev
 
 Opens on `http://localhost:5173`. In dev, Vite proxies `/chat`, `/fold`,
 `/structures/*`, and `/liveness` to the backend so the session cookie is
-same-origin. The panel accumulates retrieved proteins and candidates across
-turns; candidate structures come from the agent's auto-fold, while each
-retrieved-protein card has a "Fold & view 3D structure" button that calls
-`POST /fold` directly. Details in [frontend/README.md](frontend/README.md).
+same-origin. The right panel is tabbed (Proteins / Candidates / Structures);
+the Structures tab overlays up to 5 selected molecules in one Mol* viewer
+(fold-on-select via `POST /fold` for unfolder proteins). Cards link via
+"View in Structures". Details in [frontend/README.md](frontend/README.md).
 
 ## Testing
 
@@ -183,7 +183,7 @@ frontend/              React + Vite + TypeScript + Tailwind panel (chat + protei
 ## Status
 
 Backend prototype with a React frontend panel in `frontend/` (chat,
-accumulated proteins/candidates, Mol* 3D viewer, on-demand fold for
-retrieved proteins via `POST /fold`). See
+tabbed Proteins/Candidates/Structures panels, Mol* overlay viewer with
+on-demand fold via `POST /fold`). See
 [ARCHITECTURE.md](ARCHITECTURE.md) for the full design and "Future work"
 (ProteinMPNN as the planned next generation method).

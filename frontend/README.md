@@ -3,8 +3,9 @@
 React + Vite + TypeScript + Tailwind panel for the ProtDAP backend
 (`../app`). Chat with the ReAct agent in the center panel; every UniProt
 hit and proposed candidate from the whole conversation accumulates in the
-side panels, with inline highlighting of proposed mutations and an
-embedded Mol* 3D viewer for folded structures.
+right-hand tabs (Proteins / Candidates / Structures), with inline
+highlighting of proposed mutations and a single Mol* viewer that can
+overlay up to 5 selected structures.
 
 ## Prerequisites
 
@@ -49,15 +50,15 @@ module, so it's loaded via a plain `<script>`/`<link>` tag at runtime
 ```
 src/
   api/            # Types mirroring app/models.py, and the fetch client
-  state/          # conversationStore: turns + accumulated proteins/candidates,
-                  # persisted to localStorage
+  state/          # conversationStore (chat + accumulated lists, localStorage)
+                  # + structuresStore (overlay selection, on-demand folds; not persisted)
   components/
     chat/         # Transcript, message bubbles, collapsible tool-trace details
-    proteins/     # Retrieved-protein cards (side panel)
+    proteins/     # Retrieved-protein cards
     candidates/   # Candidate cards: sequence view with highlighted
                   # mutations, modifications table, export buttons
-    structure/    # Mol* 3D structure viewer
-    layout/       # Overall page shell
+    structure/    # StructuresPanel (multi-select overlay) + Mol* StructureViewer
+    layout/       # Overall page shell with Proteins | Candidates | Structures tabs
 ```
 
 Notes:
@@ -67,11 +68,17 @@ Notes:
   transcript and accumulated `retrieved_proteins`/`candidates` lists
   (deduped by `accession`/`sequence`) in `state/conversationStore.tsx`,
   persisted to `localStorage` so a page refresh doesn't lose them.
-- All interaction happens through the chat input - protein/candidate cards
-  are read-only (no quick-action buttons that auto-send messages) by
-  design for this version, with one exception: each retrieved-protein card
-  has a "Fold & view 3D structure" button that calls `POST /fold` directly
-  (bypassing the chat/agent loop) so the user can inspect a search hit's
-  structure without asking the agent to fold it. That result lives only in
-  the card's own component state - it is not merged into the accumulated
-  `retrieved_proteins` list or persisted to `localStorage`.
+- 3D viewing lives only in the **Structures** tab: checkboxes select up to
+  5 items (retrieved proteins and/or candidates); all checked items load
+  into one Mol* scene as an as-is overlay (no superposition). Checking an
+  unfolder protein triggers `POST /fold` on demand. Overlay selection is
+  session-UI state only (not written to `localStorage`).
+- **Expand** (header button, enabled when ≥1 item is selected) opens a
+  fullscreen Structures mode: chat hidden; left column shows full
+  Protein/Candidate cards for the selection plus the checkbox catalog;
+  right column is a large Mol* overlay. **Collapse** or **Esc** exits.
+  Mol*'s own viewport expand control is disabled to avoid a conflicting
+  fullscreen.
+- Protein/candidate cards stay mostly read-only (no chat quick-actions);
+  each has a **"View in Structures"** shortcut that opens the Structures
+  tab and adds that item to the overlay set (if under the cap).

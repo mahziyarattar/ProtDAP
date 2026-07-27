@@ -43,7 +43,7 @@ export function SequenceView({ sequence, modifications }: SequenceViewProps) {
   const segments = buildSegments(sequence, modifications)
 
   return (
-    <p className="sequence-mono rounded bg-slate-50 p-2 text-[11px] text-slate-700">
+    <p dir="ltr" className="sequence-mono ltr-isolate rounded bg-slate-50 p-2 text-[11px] text-slate-700">
       {segments.map((segment, index) =>
         segment.modification ? (
           <mark

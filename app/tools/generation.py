@@ -71,6 +71,11 @@ Hard rules:
    resulting sequence than every other candidate), and every candidate
    must have at least one modification that actually changes the parent
    sequence - never propose a "variant" identical to the parent.
+7. Every modification MUST include a non-empty `reason` string that
+   briefly explains WHY that residue change was chosen for the given
+   instruction (e.g. packing, disulfide, charge). Do not omit `reason`,
+   do not leave it blank, and do not use a placeholder like "..." -
+   write a real one-sentence rationale per modification.
 """
 
 
@@ -142,6 +147,10 @@ def _apply_modifications(
         context_before = mod.get("context_before", "")
         context_after = mod.get("context_after", "")
         reason = mod.get("reason")
+        if isinstance(reason, str):
+            reason = reason.strip() or None
+        else:
+            reason = None
         if not isinstance(original, str) or not isinstance(new, str):
             continue
         if not isinstance(context_before, str):
@@ -165,10 +174,65 @@ def _apply_modifications(
                 "new": new.upper(),
                 "context_before": context_before.upper() or None,
                 "context_after": context_after.upper() or None,
-                "reason": reason if isinstance(reason, str) else None,
+                "reason": reason,
             }
         )
     return "".join(residues), applied
+
+
+def _parse_candidates_payload(raw_content: str) -> List[Dict[str, Any]]:
+    try:
+        parsed = _extract_json(raw_content)
+        raw_candidates = parsed.get("candidates", [])
+        return raw_candidates if isinstance(raw_candidates, list) else []
+    except (json.JSONDecodeError, AttributeError):
+        return []
+
+
+def _build_candidates_from_raw(
+    parent_sequence: str,
+    raw_candidates: List[Dict[str, Any]],
+    n: int,
+) -> List[Dict[str, Any]]:
+    """Construct validated candidate dicts from the LLM's modification list."""
+    cleaned_parent_sequence = _clean_sequence(parent_sequence)
+    seen_sequences: set = set()
+    candidates: List[Dict[str, Any]] = []
+
+    for raw_candidate in raw_candidates[:n]:
+        if not isinstance(raw_candidate, dict):
+            continue
+        modifications = raw_candidate.get("modifications", [])
+        if not isinstance(modifications, list):
+            modifications = []
+
+        # Sequence is constructed from `modifications`, not from any LLM
+        # "sequence" field - see _apply_modifications.
+        constructed_sequence, applied_modifications = _apply_modifications(
+            parent_sequence, modifications
+        )
+        cleaned_sequence = _clean_sequence(constructed_sequence)
+
+        if len(cleaned_sequence) < 10:
+            continue
+
+        # Reject duplicates and no-op variants identical to the parent.
+        if cleaned_sequence in seen_sequences or cleaned_sequence == cleaned_parent_sequence:
+            continue
+        seen_sequences.add(cleaned_sequence)
+
+        candidates.append(
+            {
+                "sequence": cleaned_sequence,
+                "modifications": applied_modifications,
+                "explanation": raw_candidate.get("explanation", ""),
+                "origin": "llm_proposed",
+                "method": "llm_propose",
+                "model_version": config.openrouter_model,
+            }
+        )
+
+    return candidates
 
 
 async def propose_variants(
@@ -206,55 +270,30 @@ the parent sequence above (do not paraphrase or guess) so that
 in it - this exact match is how the real candidate sequence will be
 constructed, not anything else you write."""
 
-    response = await llm.ainvoke(
-        [
-            {"role": "system", "content": _SYSTEM_PROMPT},
-            {"role": "user", "content": user_prompt},
-        ]
-    )
+    async def _ask(extra: str = "") -> List[Dict[str, Any]]:
+        response = await llm.ainvoke(
+            [
+                {"role": "system", "content": _SYSTEM_PROMPT},
+                {"role": "user", "content": user_prompt + extra},
+            ]
+        )
+        raw_content = (
+            response.content if isinstance(response.content, str) else str(response.content)
+        )
+        raw_candidates = _parse_candidates_payload(raw_content)
+        return _build_candidates_from_raw(parent_sequence, raw_candidates, n)
 
-    raw_content = response.content if isinstance(response.content, str) else str(response.content)
+    candidates = await _ask()
 
-    try:
-        parsed = _extract_json(raw_content)
-        raw_candidates = parsed.get("candidates", [])
-    except (json.JSONDecodeError, AttributeError):
-        raw_candidates = []
-
-    cleaned_parent_sequence = _clean_sequence(parent_sequence)
-    seen_sequences = set()
-    candidates: List[Dict[str, Any]] = []
-    for raw_candidate in raw_candidates[:n]:
-        modifications = raw_candidate.get("modifications", [])
-        if not isinstance(modifications, list):
-            modifications = []
-
-        # The candidate's sequence is constructed here from `modifications`,
-        # not read from the LLM's own "sequence" field - see
-        # _apply_modifications for why.
-        constructed_sequence, applied_modifications = _apply_modifications(parent_sequence, modifications)
-        cleaned_sequence = _clean_sequence(constructed_sequence)
-
-        if len(cleaned_sequence) < 10:
-            continue
-
-        # Reject exact duplicates (within this batch) and no-op "variants"
-        # that are identical to the parent - the LLM occasionally repeats
-        # itself, proposes zero changes, or lists modifications that fail
-        # validation in _apply_modifications and so have no real effect.
-        if cleaned_sequence in seen_sequences or cleaned_sequence == cleaned_parent_sequence:
-            continue
-        seen_sequences.add(cleaned_sequence)
-
-        candidates.append(
-            {
-                "sequence": cleaned_sequence,
-                "modifications": applied_modifications,
-                "explanation": raw_candidate.get("explanation", ""),
-                "origin": "llm_proposed",
-                "method": "llm_propose",
-                "model_version": config.openrouter_model,
-            }
+    # One retry when JSON is unusable or every modification fails to apply -
+    # otherwise the agent turn can look fine in prose while API `candidates`
+    # is empty.
+    if not candidates:
+        candidates = await _ask(
+            "\n\nYour previous reply produced no usable candidates. Reply again "
+            "with ONLY the required JSON object, copying context_before/"
+            "original/context_after VERBATIM from the parent sequence so each "
+            "modification matches exactly once."
         )
 
     return candidates

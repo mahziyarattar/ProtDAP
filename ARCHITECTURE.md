@@ -202,18 +202,21 @@ A React + Vite + TypeScript + Tailwind panel lives in `frontend/` (see
 backend's `POST /chat`, `POST /fold`, `GET /structures/{id}`, and
 `GET /liveness` endpoints. Highlights:
 
-- Chat transcript in the center; side panels accumulate every
+- Chat transcript in the center; the right panel is tabbed
+  (**Proteins | Candidates | Structures**) and accumulates every
   `retrieved_proteins`/`candidates` entry seen across the whole
   conversation (deduped by `accession`/`sequence`), persisted to
   `localStorage` since the backend only returns the latest turn's data.
 - Candidate sequences render with mutated residues inline-highlighted
   (position computed from `Candidate.modifications`, see the schema
-  above), plus a Mol* 3D viewer for folded structures.
-- Retrieved (non-candidate) proteins get an on-demand "Fold & view 3D
-  structure" button that calls `POST /fold` directly - this is
-  per-card, client-only state (not part of the conversation store), since
-  folding a retrieved protein is a separate action from the chat/agent
-  flow and most search hits are never folded.
+  above).
+- 3D viewing is centralized in the **Structures** tab: multi-checkboxes
+  select up to 5 retrieved proteins and/or candidates; all checked items
+  load into one Mol* scene as an as-is overlay (no superposition).
+  Checking an unfolder protein triggers `POST /fold` on demand.
+  Protein/candidate cards expose a **"View in Structures"** shortcut that
+  opens that tab and adds the item to the overlay set. Overlay selection
+  is UI-only (not persisted).
 - In dev, Vite proxies API calls to the backend so the session cookie is
   treated as same-origin; `app/main.py`'s `CORSMiddleware` (allowing
   `config.frontend_origin`, with credentials) covers the case of calling
