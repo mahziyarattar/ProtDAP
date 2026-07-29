@@ -21,6 +21,7 @@ from app.agent.prompts import MAX_TOOL_ITERATIONS, SYSTEM_PROMPT
 from app.config import config
 from app.tools.biolm_mcp import get_biolm_client
 from app.tools.generation import propose_variants
+from app.tools.protrek import search_protrek
 from app.tools.uniprot import search_uniprot, get_uniprot_entry
 
 TraceEntry = Dict[str, Any]
@@ -74,6 +75,39 @@ def _build_tools(trace: List[TraceEntry]):
             }
         )
         return json.dumps(result)
+
+    @tool
+    async def search_protrek_tool(
+        description: str,
+        k: Optional[int] = None,
+        organism_id: Optional[str] = None,
+    ) -> str:
+        """Semantic text→protein search via local ProTrek (Swiss-Prot FAISS).
+        Use for vague functional descriptions (e.g. 'small cytokine involved
+        in inflammation') when UniProt keyword search is a poor fit.
+        Returns enriched UniProt protein records plus ProTrek similarity
+        scores. Optional organism_id (e.g. '9606') post-filters after enrich —
+        the ProTrek index is multi-organism, not human-only."""
+        bundle = await search_protrek(
+            description=description, k=k, organism_id=organism_id
+        )
+        proteins = bundle.get("proteins") or []
+        trace.append(
+            {
+                "tool": "search_protrek",
+                "args": {
+                    "description": description,
+                    "k": k,
+                    "organism_id": organism_id,
+                },
+                "result": proteins,
+                "meta": {
+                    "skipped_accessions": bundle.get("skipped_accessions") or [],
+                    "protrek_hit_count": bundle.get("protrek_hit_count"),
+                },
+            }
+        )
+        return json.dumps(bundle)
 
     @tool
     async def propose_variants_tool(
@@ -165,13 +199,16 @@ def _build_tools(trace: List[TraceEntry]):
         )
         return json.dumps(result)
 
-    return [
+    tools = [
         search_uniprot_tool,
         get_uniprot_entry_tool,
         propose_variants_tool,
         fold_sequence_tool,
         score_variant_tool,
     ]
+    if config.protrek_base_url:
+        tools.insert(2, search_protrek_tool)
+    return tools
 
 
 def _build_model() -> ChatOpenAI:

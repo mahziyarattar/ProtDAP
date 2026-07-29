@@ -28,6 +28,9 @@ def _collect_retrieved_proteins(trace: List[Dict[str, Any]]) -> List[Dict[str, A
     for entry in trace:
         if entry["tool"] == "search_uniprot":
             hits = entry["result"] or []
+        elif entry["tool"] == "search_protrek":
+            # Trace stores the enriched protein list (not the full bundle)
+            hits = entry["result"] or []
         elif entry["tool"] == "get_uniprot_entry":
             hits = [entry["result"]] if entry["result"] else []
         else:
@@ -157,6 +160,10 @@ def summarize_trace(trace: List[Dict[str, Any]]) -> List[str]:
 
         if tool_name == "search_uniprot":
             lines.append(f"search_uniprot(text={args.get('text')!r}) -> {len(result or [])} hit(s)")
+        elif tool_name == "search_protrek":
+            lines.append(
+                f"search_protrek(description={args.get('description')!r}) -> {len(result or [])} hit(s)"
+            )
         elif tool_name == "get_uniprot_entry":
             found = "found" if result else "not found"
             lines.append(f"get_uniprot_entry({args.get('accession')!r}) -> {found}")

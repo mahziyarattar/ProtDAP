@@ -47,6 +47,11 @@ class Config:
         default_factory=lambda: os.getenv("UNIPROT_BASE_URL", "https://rest.uniprot.org")
     )
 
+    # ProTrek local FastAPI (optional — tool registered only when set)
+    protrek_base_url: str = field(
+        default_factory=lambda: os.getenv("PROTREK_BASE_URL", "").rstrip("/")
+    )
+
     # Search / generation defaults
     default_result_size: int = field(default_factory=lambda: _get_int("DEFAULT_RESULT_SIZE", 5))
     session_ttl_seconds: int = field(default_factory=lambda: _get_int("SESSION_TTL_SECONDS", 3600))

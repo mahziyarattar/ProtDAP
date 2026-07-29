@@ -27,10 +27,14 @@ class ProteinHit(BaseModel):
     accession: str
     protein_name: Optional[str] = None
     organism: Optional[str] = None
+    organism_id: Optional[str] = None
     length: Optional[int] = None
     sequence: Optional[str] = None
     function: Optional[str] = None
     reviewed: Optional[bool] = None
+    # Optional provenance (e.g. from search_protrek)
+    score: Optional[float] = None
+    retrieval_method: Optional[str] = None
 
 
 class ParentInfo(BaseModel):

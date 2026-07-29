@@ -1,0 +1,782 @@
+[
+  {
+    "description": "small human cytokine involved in inflammation",
+    "ok": true,
+    "protrek_hit_count": 5,
+    "enriched": 5,
+    "skipped": 0,
+    "skipped_detail": [],
+    "human_9606": 2,
+    "organisms": [
+      "Gemmula speciosa",
+      "Homo sapiens",
+      "Mus musculus",
+      "Mus musculus",
+      "Homo sapiens"
+    ],
+    "top": [
+      {
+        "accession": "D5KXH3",
+        "name": "Turripeptide VIII-01",
+        "organism": "Gemmula speciosa",
+        "organism_id": "439592",
+        "score": 14.708620557598039
+      },
+      {
+        "accession": "Q1L6U9",
+        "name": "Prostate-associated microseminoprotein",
+        "organism": "Homo sapiens",
+        "organism_id": "9606",
+        "score": 14.554850260416666
+      },
+      {
+        "accession": "B1AWI6",
+        "name": "Prostate-associated microseminoprotein",
+        "organism": "Mus musculus",
+        "organism_id": "10090",
+        "score": 14.46554904513889
+      }
+    ]
+  },
+  {
+    "description": "insulin receptor tyrosine kinase",
+    "ok": true,
+    "protrek_hit_count": 5,
+    "enriched": 5,
+    "skipped": 0,
+    "skipped_detail": [],
+    "human_9606": 0,
+    "organisms": [
+      "Macaca mulatta",
+      "Aedes aegypti",
+      "Bos taurus",
+      "Hydra vulgaris",
+      "Xenopus laevis"
+    ],
+    "top": [
+      {
+        "accession": "Q28516",
+        "name": "Insulin receptor",
+        "organism": "Macaca mulatta",
+        "organism_id": "9544",
+        "score": 19.549578099468953
+      },
+      {
+        "accession": "Q93105",
+        "name": "Insulin-like receptor",
+        "organism": "Aedes aegypti",
+        "organism_id": "7159",
+        "score": 19.436989379084967
+      },
+      {
+        "accession": "Q05688",
+        "name": "Insulin-like growth factor 1 receptor",
+        "organism": "Bos taurus",
+        "organism_id": "9913",
+        "score": 18.92156862745098
+      }
+    ]
+  },
+  {
+    "description": "hemoglobin oxygen transport",
+    "ok": true,
+    "protrek_hit_count": 5,
+    "enriched": 5,
+    "skipped": 0,
+    "skipped_detail": [],
+    "human_9606": 0,
+    "organisms": [
+      "Liparis tunicatus",
+      "Boreogadus saida",
+      "Leiostomus xanthurus",
+      "Lepidosiren paradoxus",
+      "Gadus morhua"
+    ],
+    "top": [
+      {
+        "accession": "P85082",
+        "name": "Hemoglobin subunit beta-1",
+        "organism": "Liparis tunicatus",
+        "organism_id": "420949",
+        "score": 17.942558338439543
+      },
+      {
+        "accession": "Q1AGS6",
+        "name": "Hemoglobin subunit beta-2",
+        "organism": "Boreogadus saida",
+        "organism_id": "44932",
+        "score": 17.601731643178105
+      },
+      {
+        "accession": "P56251",
+        "name": "Hemoglobin subunit beta",
+        "organism": "Leiostomus xanthurus",
+        "organism_id": "59837",
+        "score": 17.578541475183822
+      }
+    ]
+  },
+  {
+    "description": "DNA polymerase processivity clamp",
+    "ok": true,
+    "protrek_hit_count": 5,
+    "enriched": 5,
+    "skipped": 0,
+    "skipped_detail": [],
+    "human_9606": 0,
+    "organisms": [
+      "Orgyia pseudotsugata multicapsid polyhedrosis virus",
+      "Aeropyrum pernix (strain ATCC 700893 / DSM 11879 / JCM 9820 / NBRC 100138 / K1)",
+      "Saccharolobus solfataricus (strain ATCC 35092 / DSM 1617 / JCM 11322 / P2)",
+      "Aeropyrum pernix (strain ATCC 700893 / DSM 11879 / JCM 9820 / NBRC 100138 / K1)",
+      "Sulfurisphaera ohwakuensis"
+    ],
+    "top": [
+      {
+        "accession": "O10308",
+        "name": "Probable DNA polymerase sliding clamp",
+        "organism": "Orgyia pseudotsugata multicapsid polyhedrosis virus",
+        "organism_id": "262177",
+        "score": 22.565809461805557
+      },
+      {
+        "accession": "Q9YFT8",
+        "name": "DNA polymerase sliding clamp 1",
+        "organism": "Aeropyrum pernix (strain ATCC 700893 / DSM 11879 / JCM 9820 / NBRC 100138 / K1)",
+        "organism_id": "272557",
+        "score": 22.055903416053923
+      },
+      {
+        "accession": "P57766",
+        "name": "DNA polymerase sliding clamp 1",
+        "organism": "Saccharolobus solfataricus (strain ATCC 35092 / DSM 1617 / JCM 11322 / P2)",
+        "organism_id": "273057",
+        "score": 21.950244778901144
+      }
+    ]
+  },
+  {
+    "description": "ribosomal protein large subunit",
+    "ok": true,
+    "protrek_hit_count": 5,
+    "enriched": 5,
+    "skipped": 0,
+    "skipped_detail": [],
+    "human_9606": 0,
+    "organisms": [
+      "Drosophila melanogaster",
+      "Sus scrofa",
+      "Halobacterium salinarum (strain ATCC 700922 / JCM 11081 / NRC-1)",
+      "Entamoeba histolytica (strain ATCC 30459 / HM-1:IMSS / ABRM)",
+      "Aspergillus fumigatus (strain ATCC MYA-4609 / CBS 101355 / FGSC A1100 / Af293)"
+    ],
+    "top": [
+      {
+        "accession": "Q9VTP4",
+        "name": "Large ribosomal subunit protein uL1",
+        "organism": "Drosophila melanogaster",
+        "organism_id": "7227",
+        "score": 15.779496336294935
+      },
+      {
+        "accession": "P53027",
+        "name": "Large ribosomal subunit protein uL1",
+        "organism": "Sus scrofa",
+        "organism_id": "9823",
+        "score": 15.769017437704248
+      },
+      {
+        "accession": "P15008",
+        "name": "Large ribosomal subunit protein uL22",
+        "organism": "Halobacterium salinarum (strain ATCC 700922 / JCM 11081 / NRC-1)",
+        "organism_id": "64091",
+        "score": 15.637015548406863
+      }
+    ]
+  },
+  {
+    "description": "serine protease digestive enzyme",
+    "ok": true,
+    "protrek_hit_count": 5,
+    "enriched": 5,
+    "skipped": 0,
+    "skipped_detail": [],
+    "human_9606": 0,
+    "organisms": [
+      "Phaedon cochleariae",
+      "Tachypleus tridentatus",
+      "Hydra vulgaris",
+      "Schistosoma mansoni",
+      "Apis mellifera"
+    ],
+    "top": [
+      {
+        "accession": "O97399",
+        "name": "Trypsin",
+        "organism": "Phaedon cochleariae",
+        "organism_id": "80249",
+        "score": 18.302289177389707
+      },
+      {
+        "accession": "P21902",
+        "name": "Proclotting enzyme",
+        "organism": "Tachypleus tridentatus",
+        "organism_id": "6853",
+        "score": 18.098396650326798
+      },
+      {
+        "accession": "P29145",
+        "name": "PC3-like endoprotease variant B",
+        "organism": "Hydra vulgaris",
+        "organism_id": "6087",
+        "score": 18.01775684232026
+      }
+    ]
+  },
+  {
+    "description": "G-protein coupled receptor rhodopsin-like",
+    "ok": true,
+    "protrek_hit_count": 5,
+    "enriched": 5,
+    "skipped": 0,
+    "skipped_detail": [],
+    "human_9606": 0,
+    "organisms": [
+      "Cambarellus shufeldtii",
+      "Faxonius virilis",
+      "Procambarus seminolae",
+      "Procambarus orcinus",
+      "Procambarus milleri"
+    ],
+    "top": [
+      {
+        "accession": "O16018",
+        "name": "Rhodopsin",
+        "organism": "Cambarellus shufeldtii",
+        "organism_id": "60963",
+        "score": 17.98373672385621
+      },
+      {
+        "accession": "O16019",
+        "name": "Rhodopsin",
+        "organism": "Faxonius virilis",
+        "organism_id": "2860243",
+        "score": 17.965635212418302
+      },
+      {
+        "accession": "O18486",
+        "name": "Rhodopsin",
+        "organism": "Procambarus seminolae",
+        "organism_id": "61505",
+        "score": 17.962459788602942
+      }
+    ]
+  },
+  {
+    "description": "heat shock protein molecular chaperone",
+    "ok": true,
+    "protrek_hit_count": 5,
+    "enriched": 5,
+    "skipped": 0,
+    "skipped_detail": [],
+    "human_9606": 1,
+    "organisms": [
+      "Dictyostelium discoideum",
+      "Acanthamoeba polyphaga mimivirus",
+      "Nicotiana tabacum",
+      "Homo sapiens",
+      "Schizosaccharomyces pombe (strain 972 / ATCC 24843)"
+    ],
+    "top": [
+      {
+        "accession": "Q54BD8",
+        "name": "Heat shock cognate 70 kDa protein 4",
+        "organism": "Dictyostelium discoideum",
+        "organism_id": "44689",
+        "score": 17.334236494076798
+      },
+      {
+        "accession": "Q5UPU0",
+        "name": "Heat shock protein 70 homolog",
+        "organism": "Acanthamoeba polyphaga mimivirus",
+        "organism_id": "212035",
+        "score": 17.215159696691178
+      },
+      {
+        "accession": "P36182",
+        "name": "Heat shock protein 82",
+        "organism": "Nicotiana tabacum",
+        "organism_id": "4097",
+        "score": 17.126115387561274
+      }
+    ]
+  },
+  {
+    "description": "cytochrome c electron transfer",
+    "ok": true,
+    "protrek_hit_count": 5,
+    "enriched": 5,
+    "skipped": 0,
+    "skipped_detail": [],
+    "human_9606": 1,
+    "organisms": [
+      "Euglena gracilis",
+      "Mus musculus",
+      "Homo sapiens",
+      "Candida albicans (strain SC5314 / ATCC MYA-2876)",
+      "Rhodobacter capsulatus (strain ATCC BAA-309 / NBRC 16581 / SB1003)"
+    ],
+    "top": [
+      {
+        "accession": "P20114",
+        "name": "Cytochrome c1, heme protein",
+        "organism": "Euglena gracilis",
+        "organism_id": "3039",
+        "score": 17.27499170241013
+      },
+      {
+        "accession": "Q9D0M3",
+        "name": "Cytochrome c1, heme protein, mitochondrial",
+        "organism": "Mus musculus",
+        "organism_id": "10090",
+        "score": 17.273459839665033
+      },
+      {
+        "accession": "P08574",
+        "name": "Cytochrome c1, heme protein, mitochondrial",
+        "organism": "Homo sapiens",
+        "organism_id": "9606",
+        "score": 17.18380757250817
+      }
+    ]
+  },
+  {
+    "description": "antibody immunoglobulin constant domain",
+    "ok": true,
+    "protrek_hit_count": 5,
+    "enriched": 5,
+    "skipped": 0,
+    "skipped_detail": [],
+    "human_9606": 0,
+    "organisms": [
+      "Mus musculus",
+      "Mus musculus",
+      "Mus musculus",
+      "Mus musculus",
+      "Mus musculus"
+    ],
+    "top": [
+      {
+        "accession": "P01809",
+        "name": "Ig heavy chain V region X24",
+        "organism": "Mus musculus",
+        "organism_id": "10090",
+        "score": 22.1282998876634
+      },
+      {
+        "accession": "P01793",
+        "name": "Ig heavy chain V region HPCG13",
+        "organism": "Mus musculus",
+        "organism_id": "10090",
+        "score": 22.069224239174837
+      },
+      {
+        "accession": "P01803",
+        "name": "Ig heavy chain V region AMPC1",
+        "organism": "Mus musculus",
+        "organism_id": "10090",
+        "score": 21.982409109477125
+      }
+    ]
+  },
+  {
+    "description": "zinc finger transcription factor DNA binding",
+    "ok": true,
+    "protrek_hit_count": 5,
+    "enriched": 5,
+    "skipped": 0,
+    "skipped_detail": [],
+    "human_9606": 1,
+    "organisms": [
+      "Mesocricetus auratus",
+      "Homo sapiens",
+      "Mus musculus",
+      "Pongo abelii",
+      "Mus musculus"
+    ],
+    "top": [
+      {
+        "accession": "Q60542",
+        "name": "Zinc finger E-box-binding homeobox 1",
+        "organism": "Mesocricetus auratus",
+        "organism_id": "10036",
+        "score": 17.027594273386438
+      },
+      {
+        "accession": "P17041",
+        "name": "Zinc finger protein 32",
+        "organism": "Homo sapiens",
+        "organism_id": "9606",
+        "score": 16.98578559027778
+      },
+      {
+        "accession": "Q80V23",
+        "name": "Zinc finger protein 32",
+        "organism": "Mus musculus",
+        "organism_id": "10090",
+        "score": 16.648731107026144
+      }
+    ]
+  },
+  {
+    "description": "ATP synthase proton channel",
+    "ok": true,
+    "protrek_hit_count": 5,
+    "enriched": 5,
+    "skipped": 0,
+    "skipped_detail": [],
+    "human_9606": 0,
+    "organisms": [
+      "Manduca sexta",
+      "Emericella nidulans (strain FGSC A4 / ATCC 38163 / CBS 112.46 / NRRL 194 / M139)",
+      "Podospora anserina",
+      "Spinacia oleracea",
+      "Zea mays"
+    ],
+    "top": [
+      {
+        "accession": "Q9U505",
+        "name": "ATP synthase lipid-binding protein, mitochondrial",
+        "organism": "Manduca sexta",
+        "organism_id": "7130",
+        "score": 16.292279411764707
+      },
+      {
+        "accession": "P16000",
+        "name": "ATP synthase subunit 9, mitochondrial",
+        "organism": "Emericella nidulans (strain FGSC A4 / ATCC 38163 / CBS 112.46 / NRRL 194 / M139)",
+        "organism_id": "227321",
+        "score": 16.247217116013072
+      },
+      {
+        "accession": "Q03672",
+        "name": "ATP synthase subunit 9, mitochondrial",
+        "organism": "Podospora anserina",
+        "organism_id": "2587412",
+        "score": 16.14725509344363
+      }
+    ]
+  },
+  {
+    "description": "collagen extracellular matrix structural",
+    "ok": true,
+    "protrek_hit_count": 5,
+    "enriched": 5,
+    "skipped": 0,
+    "skipped_detail": [],
+    "human_9606": 2,
+    "organisms": [
+      "Rattus norvegicus",
+      "Mus musculus",
+      "Homo sapiens",
+      "Homo sapiens",
+      "Mus musculus"
+    ],
+    "top": [
+      {
+        "accession": "P20909",
+        "name": "Collagen alpha-1(XI) chain",
+        "organism": "Rattus norvegicus",
+        "organism_id": "10116",
+        "score": 19.219595715890524
+      },
+      {
+        "accession": "Q61245",
+        "name": "Collagen alpha-1(XI) chain",
+        "organism": "Mus musculus",
+        "organism_id": "10090",
+        "score": 19.142597273284313
+      },
+      {
+        "accession": "P20849",
+        "name": "Collagen alpha-1(IX) chain",
+        "organism": "Homo sapiens",
+        "organism_id": "9606",
+        "score": 19.031409569035947
+      }
+    ]
+  },
+  {
+    "description": "kinase involved in cell cycle regulation",
+    "ok": true,
+    "protrek_hit_count": 5,
+    "enriched": 5,
+    "skipped": 0,
+    "skipped_detail": [],
+    "human_9606": 0,
+    "organisms": [
+      "Petunia hybrida",
+      "Entamoeba histolytica (strain ATCC 30459 / HM-1:IMSS / ABRM)",
+      "Danio rerio",
+      "Pisum sativum",
+      "Xenopus laevis"
+    ],
+    "top": [
+      {
+        "accession": "P43290",
+        "name": "Cell division control protein 2 homolog",
+        "organism": "Petunia hybrida",
+        "organism_id": "4102",
+        "score": 18.720631318933822
+      },
+      {
+        "accession": "Q04770",
+        "name": "Cyclin-dependent kinase 2",
+        "organism": "Entamoeba histolytica (strain ATCC 30459 / HM-1:IMSS / ABRM)",
+        "organism_id": "294381",
+        "score": 18.060234119689543
+      },
+      {
+        "accession": "A8WIP6",
+        "name": "Cyclin-dependent kinase 20",
+        "organism": "Danio rerio",
+        "organism_id": "7955",
+        "score": 17.991206150428923
+      }
+    ]
+  },
+  {
+    "description": "ion channel voltage-gated sodium",
+    "ok": true,
+    "protrek_hit_count": 5,
+    "enriched": 5,
+    "skipped": 0,
+    "skipped_detail": [],
+    "human_9606": 1,
+    "organisms": [
+      "Electrophorus electricus",
+      "Homo sapiens",
+      "Danio rerio",
+      "Danio rerio",
+      "Canis lupus familiaris"
+    ],
+    "top": [
+      {
+        "accession": "P02719",
+        "name": "Sodium channel protein",
+        "organism": "Electrophorus electricus",
+        "organism_id": "8005",
+        "score": 20.891582414215687
+      },
+      {
+        "accession": "Q01118",
+        "name": "Sodium channel protein type 7 subunit alpha",
+        "organism": "Homo sapiens",
+        "organism_id": "9606",
+        "score": 20.701395271650327
+      },
+      {
+        "accession": "Q2XVR3",
+        "name": "Sodium channel protein type 4 subunit alpha A",
+        "organism": "Danio rerio",
+        "organism_id": "7955",
+        "score": 20.70014105902778
+      }
+    ]
+  },
+  {
+    "description": "ubiquitin conjugating enzyme",
+    "ok": true,
+    "protrek_hit_count": 5,
+    "enriched": 5,
+    "skipped": 0,
+    "skipped_detail": [],
+    "human_9606": 0,
+    "organisms": [
+      "Arabidopsis thaliana",
+      "Arabidopsis thaliana",
+      "Caenorhabditis elegans",
+      "Dictyostelium discoideum",
+      "Dictyostelium discoideum"
+    ],
+    "top": [
+      {
+        "accession": "Q9FI61",
+        "name": "Ubiquitin-conjugating enzyme E2 27",
+        "organism": "Arabidopsis thaliana",
+        "organism_id": "3702",
+        "score": 19.771650326797385
+      },
+      {
+        "accession": "P42746",
+        "name": "Ubiquitin-conjugating enzyme E2 3",
+        "organism": "Arabidopsis thaliana",
+        "organism_id": "3702",
+        "score": 19.314657373366014
+      },
+      {
+        "accession": "P52478",
+        "name": "Ubiquitin-conjugating enzyme E2 1",
+        "organism": "Caenorhabditis elegans",
+        "organism_id": "6239",
+        "score": 19.30309500102124
+      }
+    ]
+  },
+  {
+    "description": "lysosomal hydrolase glycosidase",
+    "ok": true,
+    "protrek_hit_count": 5,
+    "enriched": 5,
+    "skipped": 0,
+    "skipped_detail": [],
+    "human_9606": 0,
+    "organisms": [
+      "Oryctolagus cuniculus",
+      "Arabidopsis thaliana",
+      "Ovis aries",
+      "Rattus norvegicus",
+      "Xenopus laevis"
+    ],
+    "top": [
+      {
+        "accession": "P09849",
+        "name": "Lactase/phlorizin hydrolase",
+        "organism": "Oryctolagus cuniculus",
+        "organism_id": "9986",
+        "score": 19.891738791870914
+      },
+      {
+        "accession": "Q8L608",
+        "name": "Heparanase-like protein 2",
+        "organism": "Arabidopsis thaliana",
+        "organism_id": "3702",
+        "score": 19.631669985702615
+      },
+      {
+        "accession": "W5PLZ6",
+        "name": "Lactase/phlorizin hydrolase",
+        "organism": "Ovis aries",
+        "organism_id": "9940",
+        "score": 19.53390203737745
+      }
+    ]
+  },
+  {
+    "description": "membrane transporter ABC family",
+    "ok": true,
+    "protrek_hit_count": 5,
+    "enriched": 5,
+    "skipped": 0,
+    "skipped_detail": [],
+    "human_9606": 0,
+    "organisms": [
+      "Lactococcus lactis subsp. lactis (strain IL1403)",
+      "Fusobacterium nucleatum subsp. nucleatum (strain ATCC 25586 / DSM 15643 / BCRC 10681 / CIP 101130 / JCM 8532 / KCTC 2640 / LMG 13131 / VPI 4355)",
+      "Lactococcus lactis subsp. cremoris (strain MG1363)",
+      "Bacillus subtilis (strain 168)",
+      "Lactococcus lactis subsp. lactis"
+    ],
+    "top": [
+      {
+        "accession": "Q9CHL8",
+        "name": "Multidrug resistance ABC transporter ATP-binding and permease protein",
+        "organism": "Lactococcus lactis subsp. lactis (strain IL1403)",
+        "organism_id": "272623",
+        "score": 15.085758782679738
+      },
+      {
+        "accession": "Q8RHK9",
+        "name": "Energy-coupling factor transporter ATP-binding protein EcfA2",
+        "organism": "Fusobacterium nucleatum subsp. nucleatum (strain ATCC 25586 / DSM 15643 / BCRC 10681 / CIP 101130 / JCM 8532 / KCTC 2640 / LMG 13131 / VPI 4355)",
+        "organism_id": "190304",
+        "score": 15.076029858558007
+      },
+      {
+        "accession": "P97046",
+        "name": "Multidrug resistance ABC transporter ATP-binding and permease protein",
+        "organism": "Lactococcus lactis subsp. cremoris (strain MG1363)",
+        "organism_id": "416870",
+        "score": 14.853648067299837
+      }
+    ]
+  },
+  {
+    "description": "antioxidant enzyme superoxide dismutase",
+    "ok": true,
+    "protrek_hit_count": 5,
+    "enriched": 5,
+    "skipped": 0,
+    "skipped_detail": [],
+    "human_9606": 0,
+    "organisms": [
+      "Picea abies",
+      "Haemonchus contortus",
+      "Candida albicans (strain SC5314 / ATCC MYA-2876)",
+      "Schistosoma mansoni",
+      "Paralichthys olivaceus"
+    ],
+    "top": [
+      {
+        "accession": "P29428",
+        "name": "Superoxide dismutase [Cu-Zn] 2",
+        "organism": "Picea abies",
+        "organism_id": "3329",
+        "score": 15.901849085988562
+      },
+      {
+        "accession": "P51547",
+        "name": "Extracellular superoxide dismutase [Cu-Zn]",
+        "organism": "Haemonchus contortus",
+        "organism_id": "6289",
+        "score": 15.826971315870098
+      },
+      {
+        "accession": "Q5AD07",
+        "name": "Cell surface Cu-only superoxide dismutase 5",
+        "organism": "Candida albicans (strain SC5314 / ATCC MYA-2876)",
+        "organism_id": "237561",
+        "score": 15.47018452563317
+      }
+    ]
+  },
+  {
+    "description": "peptide hormone involved in glucose homeostasis",
+    "ok": true,
+    "protrek_hit_count": 5,
+    "enriched": 5,
+    "skipped": 0,
+    "skipped_detail": [],
+    "human_9606": 0,
+    "organisms": [
+      "Oncorhynchus kisutch",
+      "Bos taurus",
+      "Aquarana catesbeiana",
+      "Sus scrofa",
+      "Piaractus mesopotamicus"
+    ],
+    "top": [
+      {
+        "accession": "P07449",
+        "name": "Glucagon-1",
+        "organism": "Oncorhynchus kisutch",
+        "organism_id": "8019",
+        "score": 18.081501480800654
+      },
+      {
+        "accession": "P09680",
+        "name": "Gastric inhibitory polypeptide",
+        "organism": "Bos taurus",
+        "organism_id": "9913",
+        "score": 17.936842575571895
+      },
+      {
+        "accession": "P15438",
+        "name": "Pro-glucagon",
+        "organism": "Aquarana catesbeiana",
+        "organism_id": "8400",
+        "score": 17.89367595996732
+      }
+    ]
+  }
+]

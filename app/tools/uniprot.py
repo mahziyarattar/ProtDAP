@@ -31,7 +31,9 @@ from tenacity import retry, retry_if_exception_type, stop_after_attempt
 
 from app.config import config
 
-DEFAULT_FIELDS = "accession,id,protein_name,organism_name,length,sequence,cc_function"
+DEFAULT_FIELDS = (
+    "accession,id,protein_name,organism_name,organism_id,length,sequence,cc_function"
+)
 REQUEST_TIMEOUT_SECONDS = 30.0
 # Safety net independent of prompt-level guidance: caps how many full protein
 # records (each including a full sequence) can be pulled into the agent's
@@ -101,10 +103,12 @@ def _parse_entry(entry: Dict[str, Any]) -> Dict[str, Any]:
     sequence = entry.get("sequence", {}) or {}
     entry_type = entry.get("entryType", "") or ""
 
+    taxon_id = organism.get("taxonId")
     return {
         "accession": entry.get("primaryAccession"),
         "protein_name": full_name.get("value"),
         "organism": organism.get("scientificName"),
+        "organism_id": str(taxon_id) if taxon_id is not None else None,
         "length": sequence.get("length"),
         "sequence": sequence.get("value"),
         "function": _first_function_comment(entry),
