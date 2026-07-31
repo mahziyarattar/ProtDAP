@@ -233,7 +233,10 @@ mock the `httpx` transport and recorded fixtures under `app/eval/fixtures/`:
 1. `search_uniprot("human immune response")` against a recorded fixture
    returns parsed hits with `accession`, `protein_name`, `organism`,
    `sequence` populated - and no raw UniProt JSON keys (e.g.
-   `primaryAccession`) leak through.
+   `primaryAccession`) leak through. The same parser also extracts optional
+   annotations (`gene_names`, `subcellular_locations`, `go_terms`,
+   `diseases`, `domains`) when present in the UniProt payload, with list
+   caps to keep agent context small.
 2. `build_query(..., reviewed=True)` includes `reviewed:true`;
    `reviewed=False` omits it.
 3. `build_query(..., organism_id="9606")` ANDs `organism_id:9606` in.

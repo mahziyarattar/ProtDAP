@@ -40,11 +40,16 @@ it should **ask the user** — not guess.
     {
       "accession": "P01308",
       "protein_name": "Insulin",
+      "gene_names": ["INS"],
       "organism": "Homo sapiens",
       "organism_id": "9606",
       "length": 110,
       "sequence": "...",
       "function": "...",
+      "subcellular_locations": ["Secreted"],
+      "go_terms": ["GO:0005179 F:hormone activity"],
+      "diseases": null,
+      "domains": null,
       "reviewed": true,
       "retrieval_method": "uniprot_idmapping",
       "mapped_from": "INS",
@@ -56,6 +61,10 @@ it should **ask the user** — not guess.
   "skipped_accessions": []
 }
 ```
+
+Annotation fields (`gene_names`, `subcellular_locations`, `go_terms`,
+`diseases`, `domains`) come from the shared UniProt parser
+(`app/tools/uniprot.py::_parse_entry`) and may be `null` when absent.
 
 - Soft-fail: UniProt enrich misses, organism mismatches, and (by default)
   unreviewed TrEMBL hits are skipped, not fatal.

@@ -112,19 +112,10 @@ async def search_protrek(
                 )
                 continue
 
-        # Drop organism_id from ProteinHit payload (optional internal field)
-        protein = {
-            "accession": entry.get("accession"),
-            "protein_name": entry.get("protein_name"),
-            "organism": entry.get("organism"),
-            "organism_id": entry.get("organism_id"),
-            "length": entry.get("length"),
-            "sequence": entry.get("sequence"),
-            "function": entry.get("function"),
-            "reviewed": entry.get("reviewed"),
-            "score": float(score) if score is not None else None,
-            "retrieval_method": "protrek_text",
-        }
+        # Preserve all parsed UniProt fields; overlay ProTrek provenance.
+        protein = dict(entry)
+        protein["score"] = float(score) if score is not None else None
+        protein["retrieval_method"] = "protrek_text"
         proteins.append(protein)
 
     return {

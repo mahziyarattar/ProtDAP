@@ -23,14 +23,25 @@ class FoldRequest(BaseModel):
     name: Optional[str] = None
 
 
+class ProteinDomain(BaseModel):
+    name: str
+    start: Optional[int] = None
+    end: Optional[int] = None
+
+
 class ProteinHit(BaseModel):
     accession: str
     protein_name: Optional[str] = None
+    gene_names: Optional[List[str]] = None
     organism: Optional[str] = None
     organism_id: Optional[str] = None
     length: Optional[int] = None
     sequence: Optional[str] = None
     function: Optional[str] = None
+    subcellular_locations: Optional[List[str]] = None
+    go_terms: Optional[List[str]] = None
+    diseases: Optional[List[str]] = None
+    domains: Optional[List[ProteinDomain]] = None
     reviewed: Optional[bool] = None
     # Optional provenance (e.g. from search_protrek / map_to_uniprot)
     score: Optional[float] = None

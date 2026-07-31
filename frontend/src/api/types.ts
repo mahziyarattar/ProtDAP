@@ -10,14 +10,30 @@ export interface FoldRequest {
   name?: string | null
 }
 
+export interface ProteinDomain {
+  name: string
+  start: number | null
+  end: number | null
+}
+
 export interface ProteinHit {
   accession: string
   protein_name: string | null
+  gene_names?: string[] | null
   organism: string | null
+  organism_id?: string | null
   length: number | null
   sequence: string | null
   function: string | null
+  subcellular_locations?: string[] | null
+  go_terms?: string[] | null
+  diseases?: string[] | null
+  domains?: ProteinDomain[] | null
   reviewed: boolean | null
+  score?: number | null
+  retrieval_method?: string | null
+  mapped_from?: string | null
+  mapped_from_db?: string | null
 }
 
 export interface ParentInfo {

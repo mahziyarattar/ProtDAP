@@ -3,7 +3,8 @@
   "primaryAccession": "P69905",
   "uniProtkbId": "HBA_HUMAN",
   "organism": {
-    "scientificName": "Homo sapiens"
+    "scientificName": "Homo sapiens",
+    "taxonId": 9606
   },
   "proteinDescription": {
     "recommendedName": {
@@ -12,6 +13,12 @@
       }
     }
   },
+  "genes": [
+    {
+      "geneName": { "value": "HBA1" },
+      "synonyms": [{ "value": "HBAM" }]
+    }
+  ],
   "comments": [
     {
       "commentType": "FUNCTION",
@@ -19,6 +26,47 @@
         {
           "value": "Involved in oxygen transport from the lung to the various peripheral tissues"
         }
+      ]
+    },
+    {
+      "commentType": "SUBCELLULAR LOCATION",
+      "subcellularLocations": [
+        { "location": { "value": "Cytoplasm" } }
+      ]
+    },
+    {
+      "commentType": "DISEASE",
+      "disease": {
+        "diseaseId": "Heinz body anemias",
+        "diseaseAccession": "DI-00592"
+      }
+    }
+  ],
+  "features": [
+    {
+      "type": "Domain",
+      "description": "Globin",
+      "location": {
+        "start": { "value": 2, "modifier": "EXACT" },
+        "end": { "value": 142, "modifier": "EXACT" }
+      }
+    }
+  ],
+  "uniProtKBCrossReferences": [
+    {
+      "database": "GO",
+      "id": "GO:0005833",
+      "properties": [
+        { "key": "GoTerm", "value": "C:hemoglobin complex" },
+        { "key": "GoEvidenceType", "value": "IDA:UniProtKB" }
+      ]
+    },
+    {
+      "database": "GO",
+      "id": "GO:0004601",
+      "properties": [
+        { "key": "GoTerm", "value": "F:peroxidase activity" },
+        { "key": "GoEvidenceType", "value": "IDA:UniProtKB" }
       ]
     }
   ],

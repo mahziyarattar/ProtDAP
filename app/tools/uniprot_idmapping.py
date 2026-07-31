@@ -264,21 +264,15 @@ async def map_to_uniprot(
             skipped.append({"accession": accession, "reason": "unreviewed"})
             continue
 
-        proteins.append(
+        protein = dict(entry)
+        protein.update(
             {
-                "accession": entry.get("accession"),
-                "protein_name": entry.get("protein_name"),
-                "organism": entry.get("organism"),
-                "organism_id": entry.get("organism_id"),
-                "length": entry.get("length"),
-                "sequence": entry.get("sequence"),
-                "function": entry.get("function"),
-                "reviewed": entry.get("reviewed"),
                 "retrieval_method": RETRIEVAL_METHOD,
                 "mapped_from": mapping["from"],
                 "mapped_from_db": from_db,
             }
         )
+        proteins.append(protein)
 
     public_mappings = [
         {"from": m["from"], "to": m["to"]} for m in raw["mappings"]

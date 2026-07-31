@@ -88,6 +88,47 @@ async def test_get_uniprot_entry_parses_fixture():
     assert entry["accession"] == "P69905"
     assert entry["sequence"]
     assert len(entry["sequence"]) == entry["length"]
+    assert entry["gene_names"] == ["HBA1", "HBAM"]
+    assert entry["subcellular_locations"] == ["Cytoplasm"]
+    assert entry["diseases"] == ["Heinz body anemias"]
+    assert entry["domains"] == [{"name": "Globin", "start": 2, "end": 142}]
+    assert entry["go_terms"][0].startswith("GO:0005833")
+    assert "primaryAccession" not in entry
+    assert "uniProtKBCrossReferences" not in entry
+
+
+def test_parse_entry_caps_go_and_domains():
+    from app.tools.uniprot import MAX_DOMAINS, MAX_GO_TERMS, _parse_entry
+
+    entry = {
+        "primaryAccession": "P00000",
+        "entryType": "UniProtKB reviewed (Swiss-Prot)",
+        "proteinDescription": {},
+        "organism": {},
+        "sequence": {},
+        "uniProtKBCrossReferences": [
+            {
+                "database": "GO",
+                "id": f"GO:{i:07d}",
+                "properties": [{"key": "GoTerm", "value": f"F:term{i}"}],
+            }
+            for i in range(MAX_GO_TERMS + 5)
+        ],
+        "features": [
+            {
+                "type": "Domain",
+                "description": f"Dom{i}",
+                "location": {
+                    "start": {"value": i},
+                    "end": {"value": i + 10},
+                },
+            }
+            for i in range(MAX_DOMAINS + 3)
+        ],
+    }
+    parsed = _parse_entry(entry)
+    assert len(parsed["go_terms"]) == MAX_GO_TERMS
+    assert len(parsed["domains"]) == MAX_DOMAINS
 
 
 # --- 5. HTTP 429 triggers exactly one retry honoring Retry-After -----------

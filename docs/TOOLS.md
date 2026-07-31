@@ -203,8 +203,11 @@ Independently testable; LangChain wrapping lives only in `graph.py`.
 | `organism_id` | `str \| null` | no | `null` |
 
 **Return:** `List[Dict]` — each hit:
-`accession`, `protein_name`, `organism`, `length`, `sequence`, `function`,
-`reviewed`.
+`accession`, `protein_name`, `gene_names`, `organism`, `organism_id`,
+`length`, `sequence`, `function`, `subcellular_locations`, `go_terms`,
+`diseases`, `domains`, `reviewed`. Annotation lists are capped
+(`gene_names`≤5, locations≤8, GO≤10, diseases≤5, domains≤8) so agent
+context stays small. Missing annotations are `null`.
 
 **Side effects:** `GET {uniprot_base_url}/uniprotkb/search`; one retry on HTTP
 429. Raises `ValueError` if neither `text` nor `query`; `UniProtResponseError`

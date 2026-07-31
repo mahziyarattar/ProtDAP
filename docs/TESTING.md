@@ -151,7 +151,9 @@ Field notes:
 | `candidates[].explanation` | Only for `llm_proposed` candidates; short LLM rationale for the candidate as a whole. `null` for `retrieved`. |
 | `tool_trace_summary` | Human-readable list of tools the agent called this turn. |
 
-Optional fields on hits/candidates (`protein_name`, `function`, `esm1v_score`, etc.) may be `null` depending on which tools ran.
+Optional fields on hits/candidates (`protein_name`, `function`, `gene_names`,
+`go_terms`, `diseases`, `domains`, `esm1v_score`, etc.) may be `null`
+depending on which tools ran and what UniProt returned.
 
 Also expect a `Set-Cookie: protdap_session=...` on the response when using curl with `-c`/`-b`.
 

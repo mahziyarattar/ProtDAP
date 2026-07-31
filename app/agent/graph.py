@@ -167,7 +167,8 @@ def _build_tools(
         keywords (e.g. 'human proteins involved in immune response'). Do not
         pass UniProt Lucene operators or field:value clauses in text — use
         organism_id for taxonomy filters instead. Returns a JSON list of hits
-        with accession, protein_name, organism, length, sequence, function."""
+        with accession, protein_name, gene_names, organism, length, sequence,
+        function, subcellular_locations, go_terms, diseases, domains."""
         args = {
             "text": text,
             "size": size,
