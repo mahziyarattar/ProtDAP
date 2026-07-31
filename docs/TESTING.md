@@ -1,7 +1,7 @@
 # Manual API testing
 
 Curl-based checks against a running ProtDAP server. For automated tests
-(`pytest`, smoke eval), see [README.md](README.md#testing).
+(`pytest`, smoke eval), see [README.md](../README.md#testing).
 
 ## Prerequisites
 
@@ -130,7 +130,8 @@ curl -s -X POST http://localhost:8000/chat \
     "search_uniprot(...)",
     "propose_variants(...)",
     "fold_sequence(...)"
-  ]
+  ],
+  "highlighted_accessions": ["P01308"]
 }
 ```
 
@@ -139,7 +140,8 @@ Field notes:
 | Field | What to check |
 |---|---|
 | `reply` | Non-empty prose; should not claim guaranteed/proven function. |
-| `retrieved_proteins` | Filled when UniProt search/entry tools ran; may be `[]` if the turn only diversified an already-known parent. |
+| `retrieved_proteins` | Filled when UniProt search/entry tools ran; may be `[]` if the turn only diversified an already-known parent. Full list — not only the LLM shortlist. |
+| `highlighted_accessions` | From `recommend_proteins` in the tool trace; intersected with this turn's retrieved accessions (invalid ids dropped). May be `[]` if omitted or ≤1 protein retrieved. |
 | `candidates[].origin` | `"retrieved"` or `"llm_proposed"`. Proposed variants must be `"llm_proposed"`. |
 | `candidates[].method` | `"retrieved"` or `"llm_propose"`. |
 | `candidates[].parent` | Present for proposed variants; includes parent `sequence`. |

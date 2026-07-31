@@ -23,8 +23,8 @@ export function StructuresPanel() {
 
   return (
     <section className="flex h-full flex-col overflow-hidden">
-      <div className="protdap-right-section flex shrink-0 items-center justify-between gap-2 border-b border-slate-200 bg-white px-3">
-        <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+      <div className="protdap-right-section flex shrink-0 items-center justify-between gap-2 border-b border-slate-200 bg-white px-3 transition-colors duration-150 dark:border-slate-800 dark:bg-slate-900">
+        <h2 className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
           Structures ({selectedIds.length}/{MAX_OVERLAY_STRUCTURES})
         </h2>
         <div className="flex items-center gap-2">
@@ -32,7 +32,7 @@ export function StructuresPanel() {
             <button
               type="button"
               onClick={clearSelection}
-              className="text-[11px] text-slate-500 hover:text-slate-800 hover:underline"
+              className="text-[11px] text-slate-500 hover:text-slate-800 hover:underline dark:text-slate-400 dark:hover:text-slate-200"
             >
               Clear
             </button>
@@ -42,7 +42,7 @@ export function StructuresPanel() {
             onClick={expandStructures}
             disabled={!canExpand}
             title={canExpand ? 'Expand structures view' : 'Select at least one structure first'}
-            className="rounded-md bg-indigo-600 px-2 py-1 text-[11px] font-medium text-white hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400"
+            className="rounded-md bg-indigo-600 px-2 py-1 text-[11px] font-medium text-white transition-colors duration-150 hover:bg-indigo-500 disabled:cursor-not-allowed disabled:bg-slate-200 disabled:text-slate-400 dark:disabled:bg-slate-700 dark:disabled:text-slate-500"
           >
             Expand
           </button>
@@ -50,10 +50,10 @@ export function StructuresPanel() {
       </div>
 
       <div className="flex min-h-0 flex-1 flex-col">
-        <div className="shrink-0 space-y-1 border-b border-slate-100 p-3">
+        <div className="shrink-0 space-y-1 border-b border-slate-100 p-3 transition-colors duration-150 dark:border-slate-800">
           <StructureViewer structureIds={overlayStructureIds} heightClassName="h-64" />
           {anyFolding && (
-            <p className="text-[11px] text-slate-500">Folding selected sequence(s)… (~30s each)</p>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400">Folding selected sequence(s)… (~30s each)</p>
           )}
           {selectedIds.length > 0 && (
             <ul className="mt-1 flex flex-wrap gap-x-3 gap-y-1">
@@ -62,7 +62,7 @@ export function StructuresPanel() {
                 if (!item) return null
                 const color = OVERLAY_LEGEND_COLORS[colorIndexById[id] ?? 0]
                 return (
-                  <li key={id} className="flex items-center gap-1.5 text-[11px] text-slate-600">
+                  <li key={id} className="flex items-center gap-1.5 text-[11px] text-slate-600 dark:text-slate-300">
                     <span
                       className="inline-block h-2.5 w-2.5 rounded-sm"
                       style={{ backgroundColor: color }}

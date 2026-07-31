@@ -19,7 +19,7 @@ function downloadBlob(filename: string, content: string, mimeType: string): void
 }
 
 const buttonClass =
-  'rounded border border-slate-200 px-2 py-1 text-slate-600 hover:bg-slate-50 hover:text-slate-800'
+  'rounded border border-slate-200 px-2 py-1 text-slate-600 transition-colors duration-150 hover:bg-slate-50 hover:text-slate-800 dark:border-slate-600 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-slate-100'
 
 export function ExportButtons({ candidate }: ExportButtonsProps) {
   const [copied, setCopied] = useState(false)

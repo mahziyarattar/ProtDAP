@@ -28,7 +28,7 @@ def _collect_retrieved_proteins(trace: List[Dict[str, Any]]) -> List[Dict[str, A
     for entry in trace:
         if entry["tool"] == "search_uniprot":
             hits = entry["result"] or []
-        elif entry["tool"] == "search_protrek":
+        elif entry["tool"] in ("search_protrek", "map_to_uniprot"):
             # Trace stores the enriched protein list (not the full bundle)
             hits = entry["result"] or []
         elif entry["tool"] == "get_uniprot_entry":
@@ -135,17 +135,59 @@ def _build_llm_proposed_candidates(
     return candidates
 
 
+def _collect_highlighted_accessions(trace: List[Dict[str, Any]]) -> List[str]:
+    """Union of recommend_proteins calls (raw; caller intersects with retrieved)."""
+    highlighted: List[str] = []
+    seen: set = set()
+    for entry in trace:
+        if entry.get("tool") != "recommend_proteins":
+            continue
+        raw = entry.get("result")
+        if not isinstance(raw, list):
+            raw = (entry.get("args") or {}).get("accessions") or []
+        for accession in raw:
+            if not isinstance(accession, str):
+                continue
+            acc = accession.strip()
+            if not acc or acc in seen:
+                continue
+            seen.add(acc)
+            highlighted.append(acc)
+    return highlighted
+
+
+def filter_highlighted_accessions(
+    raw: Optional[List[str]],
+    retrieved_proteins: List[ProteinHit],
+) -> List[str]:
+    """Keep only accessions that appear in this turn's retrieved_proteins."""
+    allowed = {
+        protein.accession for protein in retrieved_proteins if protein.accession
+    }
+    highlighted: List[str] = []
+    seen: set = set()
+    for accession in raw or []:
+        if not isinstance(accession, str):
+            continue
+        acc = accession.strip()
+        if not acc or acc in seen or acc not in allowed:
+            continue
+        seen.add(acc)
+        highlighted.append(acc)
+    return highlighted
+
+
 def assemble_response(
     trace: List[Dict[str, Any]],
-) -> tuple[List[ProteinHit], List[Candidate]]:
-    """Build the schema-conformant retrieved_proteins and candidates lists
-    from a single agent turn's tool-call trace."""
+) -> tuple[List[ProteinHit], List[Candidate], List[str]]:
+    """Build retrieved_proteins, candidates, and validated highlighted_accessions."""
     retrieved_raw = _collect_retrieved_proteins(trace)
     retrieved_proteins = [ProteinHit(**protein) for protein in retrieved_raw]
-
     candidates = _build_llm_proposed_candidates(trace, retrieved_raw)
-
-    return retrieved_proteins, candidates
+    highlighted = filter_highlighted_accessions(
+        _collect_highlighted_accessions(trace), retrieved_proteins
+    )
+    return retrieved_proteins, candidates, highlighted
 
 
 def summarize_trace(trace: List[Dict[str, Any]]) -> List[str]:
@@ -157,6 +199,10 @@ def summarize_trace(trace: List[Dict[str, Any]]) -> List[str]:
         tool_name = entry["tool"]
         args = entry["args"]
         result = entry["result"]
+        meta = entry.get("meta") or {}
+        if meta.get("error"):
+            lines.append(f"{tool_name}(...) -> error: {meta['error']}")
+            continue
 
         if tool_name == "search_uniprot":
             lines.append(f"search_uniprot(text={args.get('text')!r}) -> {len(result or [])} hit(s)")
@@ -164,9 +210,19 @@ def summarize_trace(trace: List[Dict[str, Any]]) -> List[str]:
             lines.append(
                 f"search_protrek(description={args.get('description')!r}) -> {len(result or [])} hit(s)"
             )
+        elif tool_name == "map_to_uniprot":
+            lines.append(
+                f"map_to_uniprot(from_db={args.get('from_db')!r}, "
+                f"n_ids={len(args.get('ids') or [])}) -> {len(result or [])} protein(s)"
+            )
         elif tool_name == "get_uniprot_entry":
             found = "found" if result else "not found"
             lines.append(f"get_uniprot_entry({args.get('accession')!r}) -> {found}")
+        elif tool_name == "recommend_proteins":
+            lines.append(
+                f"recommend_proteins(n={len(args.get('accessions') or [])}) "
+                f"-> {len(result or [])} selected"
+            )
         elif tool_name == "propose_variants":
             lines.append(
                 f"propose_variants(parent={args.get('parent_name')!r}, n={args.get('n')}) "

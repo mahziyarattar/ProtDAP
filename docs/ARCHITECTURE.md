@@ -198,7 +198,7 @@ binder design.
 ## Frontend
 
 A React + Vite + TypeScript + Tailwind panel lives in `frontend/` (see
-`frontend/README.md` for setup/run instructions), talking to this
+[`frontend/README.md`](../frontend/README.md) for setup/run instructions), talking to this
 backend's `POST /chat`, `POST /fold`, `GET /structures/{id}`, and
 `GET /liveness` endpoints. Highlights:
 

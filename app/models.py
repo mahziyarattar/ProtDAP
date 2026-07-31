@@ -32,9 +32,11 @@ class ProteinHit(BaseModel):
     sequence: Optional[str] = None
     function: Optional[str] = None
     reviewed: Optional[bool] = None
-    # Optional provenance (e.g. from search_protrek)
+    # Optional provenance (e.g. from search_protrek / map_to_uniprot)
     score: Optional[float] = None
     retrieval_method: Optional[str] = None
+    mapped_from: Optional[str] = None
+    mapped_from_db: Optional[str] = None
 
 
 class ParentInfo(BaseModel):
@@ -88,3 +90,6 @@ class ChatResponse(BaseModel):
     retrieved_proteins: List[ProteinHit] = Field(default_factory=list)
     candidates: List[Candidate] = Field(default_factory=list)
     tool_trace_summary: List[str] = Field(default_factory=list)
+    # From recommend_proteins; code keeps only accessions that appear in
+    # this turn's retrieved_proteins (never invents).
+    highlighted_accessions: List[str] = Field(default_factory=list)

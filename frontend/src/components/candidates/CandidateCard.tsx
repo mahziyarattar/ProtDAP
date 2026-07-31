@@ -26,18 +26,18 @@ export function CandidateCard({
     Boolean(candidate.sequence)
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-white p-3 text-sm">
+    <div className="rounded-lg border border-slate-200 bg-white p-3 text-sm transition-colors duration-150 dark:border-slate-700 dark:bg-slate-800">
       <div className="flex flex-wrap items-center gap-1.5">
-        <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-medium text-indigo-700">
+        <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[10px] font-medium text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300">
           {candidate.origin}
         </span>
-        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600">
+        <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-medium text-slate-600 dark:bg-slate-700 dark:text-slate-300">
           {candidate.method}
         </span>
         {candidate.warnings.map((warning) => (
           <span
             key={warning}
-            className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-700"
+            className="rounded-full bg-amber-100 px-2 py-0.5 text-[10px] font-medium text-amber-700 dark:bg-amber-950 dark:text-amber-300"
           >
             {warning}
           </span>
@@ -45,9 +45,9 @@ export function CandidateCard({
       </div>
 
       {candidate.parent && (
-        <DirAuto as="div" className="mt-1.5 text-xs text-slate-500">
+        <DirAuto as="div" className="mt-1.5 text-xs text-slate-500 dark:text-slate-400">
           Parent:{' '}
-          <span className="font-medium text-slate-700">
+          <span className="font-medium text-slate-700 dark:text-slate-200">
             {candidate.parent.protein_name ?? candidate.parent.accession ?? 'unknown'}
           </span>
           {candidate.parent.accession && (
@@ -63,10 +63,10 @@ export function CandidateCard({
         </DirAuto>
       )}
 
-      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-600">
+      <div className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-slate-600 dark:text-slate-300">
         <LtrIsolate as="span">
           pLDDT:{' '}
-          <span className="font-medium text-slate-800">
+          <span className="font-medium text-slate-800 dark:text-slate-100">
             {candidate.structure.mean_plddt !== null
               ? candidate.structure.mean_plddt.toFixed(1)
               : candidate.structure.available
@@ -77,14 +77,14 @@ export function CandidateCard({
         {candidate.esm1v_score !== null && (
           <LtrIsolate as="span">
             ESM-1v:{' '}
-            <span className="font-medium text-slate-800">{candidate.esm1v_score.toFixed(2)}</span>
+            <span className="font-medium text-slate-800 dark:text-slate-100">{candidate.esm1v_score.toFixed(2)}</span>
           </LtrIsolate>
         )}
         {showViewInStructures && canViewStructure && (
           <button
             type="button"
             onClick={() => viewInStructures(candidateStructureId(candidate.sequence))}
-            className="text-indigo-600 hover:underline"
+            className="text-indigo-600 hover:underline dark:text-indigo-400"
           >
             View in Structures
           </button>
@@ -92,7 +92,7 @@ export function CandidateCard({
       </div>
 
       {candidate.explanation && (
-        <DirAuto as="p" className="mt-2 text-xs italic text-slate-500">
+        <DirAuto as="p" className="mt-2 text-xs italic text-slate-500 dark:text-slate-400">
           {candidate.explanation}
         </DirAuto>
       )}

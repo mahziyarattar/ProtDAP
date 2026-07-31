@@ -63,11 +63,11 @@ export function StructuresExpandedView() {
   }, [selectedIds, allRetrievedProteins, allCandidates])
 
   return (
-    <div className="fixed inset-0 z-50 flex flex-col bg-white">
-      <header className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-200 px-4 py-2.5">
+    <div className="fixed inset-0 z-50 flex flex-col bg-white transition-colors duration-150 dark:bg-slate-950">
+      <header className="flex shrink-0 items-center justify-between gap-3 border-b border-slate-200 px-4 py-2.5 transition-colors duration-150 dark:border-slate-800">
         <div>
-          <h1 className="text-sm font-semibold text-slate-800">Structures</h1>
-          <p className="text-[11px] text-slate-500">
+          <h1 className="text-sm font-semibold text-slate-800 dark:text-slate-100">Structures</h1>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400">
             {selectedIds.length}/{MAX_OVERLAY_STRUCTURES} selected · Esc or Collapse to exit
           </p>
         </div>
@@ -76,7 +76,7 @@ export function StructuresExpandedView() {
             <button
               type="button"
               onClick={clearSelection}
-              className="text-xs text-slate-500 hover:text-slate-800 hover:underline"
+              className="text-xs text-slate-500 hover:text-slate-800 hover:underline dark:text-slate-400 dark:hover:text-slate-200"
             >
               Clear
             </button>
@@ -84,7 +84,7 @@ export function StructuresExpandedView() {
           <button
             type="button"
             onClick={collapseStructures}
-            className="rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-white hover:bg-slate-700"
+            className="rounded-md bg-slate-900 px-3 py-1.5 text-xs font-medium text-white transition-colors duration-150 hover:bg-slate-700 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200"
           >
             Collapse
           </button>
@@ -92,14 +92,14 @@ export function StructuresExpandedView() {
       </header>
 
       <div className="grid min-h-0 flex-1 grid-cols-1 lg:grid-cols-[380px_1fr]">
-        <aside className="flex min-h-0 flex-col border-r border-slate-200 bg-slate-50">
+        <aside className="flex min-h-0 flex-col border-r border-slate-200 bg-slate-50 transition-colors duration-150 dark:border-slate-800 dark:bg-slate-900">
           <div className="min-h-0 flex-1 space-y-4 overflow-y-auto p-3">
             <section>
-              <h2 className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+              <h2 className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
                 Selected ({selectedCards.length})
               </h2>
               {selectedCards.length === 0 ? (
-                <p className="text-xs text-slate-400">Select items below to overlay them.</p>
+                <p className="text-xs text-slate-400 dark:text-slate-500">Select items below to overlay them.</p>
               ) : (
                 <div className="space-y-2">
                   {selectedCards.map((entry) =>
@@ -123,7 +123,7 @@ export function StructuresExpandedView() {
             </section>
 
             <section>
-              <h2 className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-slate-400">
+              <h2 className="mb-2 text-[10px] font-semibold uppercase tracking-wide text-slate-400 dark:text-slate-500">
                 Selection catalog
               </h2>
               <StructureCatalogList />
@@ -140,7 +140,7 @@ export function StructuresExpandedView() {
             />
           </div>
           {anyFolding && (
-            <p className="mt-2 shrink-0 text-[11px] text-slate-500">
+            <p className="mt-2 shrink-0 text-[11px] text-slate-500 dark:text-slate-400">
               Folding selected sequence(s)… (~30s each)
             </p>
           )}
@@ -151,7 +151,7 @@ export function StructuresExpandedView() {
                 if (!item) return null
                 const color = OVERLAY_LEGEND_COLORS[colorIndexById[id] ?? 0]
                 return (
-                  <li key={id} className="flex items-center gap-1.5 text-[11px] text-slate-600">
+                  <li key={id} className="flex items-center gap-1.5 text-[11px] text-slate-600 dark:text-slate-300">
                     <span
                       className="inline-block h-2.5 w-2.5 rounded-sm"
                       style={{ backgroundColor: color }}

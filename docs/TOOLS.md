@@ -29,8 +29,9 @@ Defined in `app/agent/graph.py`. Each call appends
 | `organism_id` | `str \| null` | no | `null` |
 
 **Return (to LLM):** JSON list of protein hits (see §2 `search_uniprot`).
+On UniProt/network failure: JSON `{"error": "...", "results": []}` (no HTTP 500).
 
-**Side effects:** HTTPS to UniProt; one trace entry.
+**Side effects:** HTTPS to UniProt; one trace entry (empty result + `meta.error` on soft-fail).
 
 The system prompt tells the agent to pass `size=10` for vague/broad queries
 (e.g. "a human protein") so it has enough real candidates to pick a good
@@ -54,12 +55,40 @@ search_uniprot(text="human insulin", size=3, reviewed=true, organism_id="9606")
 | `accession` | `str` | yes | — |
 
 **Return (to LLM):** JSON object — one protein hit.
+On UniProt/network failure: JSON `{"error": "...", "accession": "..."}` (no HTTP 500).
 
-**Side effects:** HTTPS to UniProt; one trace entry.
+**Side effects:** HTTPS to UniProt; one trace entry (null result + `meta.error` on soft-fail).
 
 **Example:**
 ```text
 get_uniprot_entry(accession="P01308")
+```
+
+---
+
+### `map_to_uniprot`
+
+See [IDMAPPING.md](IDMAPPING.md) for full detail.
+
+| Param | Type | Required | Default |
+| --- | --- | --- | --- |
+| `ids` | `list[str]` | yes | — (clamped to 20) |
+| `from_db` | enum | yes | — one of `Gene_Name`, `Ensembl_Protein`, `RefSeq_Protein`, `PDB`, `UniProtKB_AC-ID` |
+| `organism_id` | `str \| null` | no | `null` (UniProt `taxId` + post-filter) |
+| `reviewed` | `bool` | no | `true` (Swiss-Prot only) |
+
+**Return (to LLM):** JSON bundle with `proteins` (enriched), `mappings`,
+`failed_ids`, `skipped_accessions`.
+On UniProt/network failure: same keys with empty lists plus `error` (no HTTP 500).
+
+**Side effects:** HTTPS to UniProt ID Mapping + per-hit `get_uniprot_entry`;
+one trace entry (`tool: map_to_uniprot`, result = protein list; empty +
+`meta.error` on soft-fail).
+
+**Example:**
+```text
+map_to_uniprot(ids=["INS"], from_db="Gene_Name", organism_id="9606")
+map_to_uniprot(ids=["ENSP00000233114"], from_db="Ensembl_Protein")
 ```
 
 ---
@@ -130,6 +159,31 @@ the pipeline.
 **Example:**
 ```text
 score_variant(sequence="MALWMRLL...")
+```
+
+---
+
+### `recommend_proteins`
+
+| Param | Type | Required | Default |
+| --- | --- | --- | --- |
+| `accessions` | `list[str]` | yes | — |
+| `reason` | `str \| null` | no | `null` |
+
+**Return (to LLM):** JSON `{"recommended": [...], "reason": ...}`.
+
+**Side effects:** One trace entry. Does **not** change `retrieved_proteins`.
+The assembler intersects recommended accessions with this turn's retrieved set
+and exposes them as `ChatResponse.highlighted_accessions`. Invalid / unknown
+ids are dropped silently.
+
+**When:** Prompt requires a call whenever this turn retrieved **more than one**
+protein. Skip when only one hit was retrieved. If the model skips anyway, the
+UI shows all proteins undimmed.
+
+**Example:**
+```text
+recommend_proteins(accessions=["P01308", "P01315"], reason="human insulin family")
 ```
 
 ---
@@ -226,7 +280,7 @@ parent sequence exactly once, then builds `sequence` and computes the
 ever contains entries that were actually applied (mismatched/ambiguous ones
 are silently dropped, not the whole candidate). This same dict (minus
 `sequence`/`origin`/`method`/`model_version`) becomes each
-`Candidate.modifications[]` entry in the `/chat` response (see TESTING.md);
+`Candidate.modifications[]` entry in the `/chat` response (see [TESTING.md](TESTING.md));
 `explanation` likewise becomes `Candidate.explanation`. Invalid / too-short
 sequences after AA cleaning, exact duplicates within the batch, and
 candidates identical to the parent are dropped. Empty list if the LLM JSON

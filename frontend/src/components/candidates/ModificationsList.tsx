@@ -9,13 +9,13 @@ export function ModificationsList({ modifications }: ModificationsListProps) {
   if (modifications.length === 0) return null
 
   return (
-    <details className="mt-2 text-xs text-slate-600">
-      <summary className="cursor-pointer select-none font-medium text-slate-700">
+    <details className="mt-2 text-xs text-slate-600 dark:text-slate-300">
+      <summary className="cursor-pointer select-none font-medium text-slate-700 dark:text-slate-200">
         Modifications ({modifications.length})
       </summary>
       <table className="mt-1.5 w-full border-collapse text-[11px]">
         <thead>
-          <tr className="text-left text-slate-400">
+          <tr className="text-left text-slate-400 dark:text-slate-500">
             <th className="pr-2 font-normal">Pos</th>
             <th className="pr-2 font-normal">Change</th>
             <th className="font-normal">Reason</th>
@@ -32,7 +32,7 @@ export function ModificationsList({ modifications }: ModificationsListProps) {
                   {mod.original}&rarr;{mod.new}
                 </LtrIsolate>
               </td>
-              <td className="py-0.5 text-slate-500">
+              <td className="py-0.5 text-slate-500 dark:text-slate-400">
                 <DirAuto as="span">{mod.reason ?? '—'}</DirAuto>
               </td>
             </tr>

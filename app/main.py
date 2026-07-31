@@ -95,10 +95,12 @@ async def chat(chat_request: ChatRequest, request: Request, response: Response) 
     history = session_store.get_history(session_id)
 
     reply_text, trace = await run_agent(
-        user_message=chat_request.message, history=history
+        user_message=chat_request.message,
+        history=history,
+        session_id=session_id,
     )
 
-    retrieved_proteins, candidates = assemble_response(trace)
+    retrieved_proteins, candidates, highlighted_accessions = assemble_response(trace)
     tool_trace_summary = summarize_trace(trace)
 
     session_store.append_history(session_id, "user", chat_request.message)
@@ -121,6 +123,7 @@ async def chat(chat_request: ChatRequest, request: Request, response: Response) 
         retrieved_proteins=retrieved_proteins,
         candidates=candidates,
         tool_trace_summary=tool_trace_summary,
+        highlighted_accessions=highlighted_accessions,
     )
 
 

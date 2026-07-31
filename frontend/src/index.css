@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 @theme {
   --font-sans:
     "Vazirmatn", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
@@ -48,7 +50,7 @@ html {
 }
 
 body {
-  @apply bg-slate-50 text-slate-900;
+  @apply bg-slate-50 text-slate-900 transition-colors duration-150 dark:bg-slate-950 dark:text-slate-100;
   /* Vazirmatn first so Persian actually uses it. System fonts (e.g. SF Arabic)
      already include Persian glyphs, so putting Vazirmatn last never applied. */
   font-family:
@@ -94,6 +96,35 @@ body {
   margin: 0.5em 0;
 }
 
+.chat-markdown hr {
+  /* padding-bottom (not margin) so space below the line doesn't collapse
+     into the following heading/paragraph margin. */
+  margin: 0.75em 0 0;
+  padding: 0 0 0.5em;
+  border: none;
+  border-top: 1px solid rgb(203 213 225);
+}
+
+.chat-markdown h1,
+.chat-markdown h2,
+.chat-markdown h3,
+.chat-markdown h4,
+.chat-markdown h5,
+.chat-markdown h6 {
+  margin: 0.75em 0 0.5em;
+  font-size: inherit;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.dark .chat-markdown hr {
+  border-top-color: rgb(51 65 85);
+}
+
+.chat-markdown-user hr {
+  border-top-color: rgb(255 255 255 / 0.35);
+}
+
 .chat-markdown strong {
   font-weight: 700;
 }
@@ -130,12 +161,20 @@ body {
   background: rgb(241 245 249);
 }
 
+.dark .chat-markdown code {
+  background: rgb(30 41 59);
+}
+
 .chat-markdown pre {
   margin: 0.5em 0;
   padding: 0.6em 0.75em;
   overflow-x: auto;
   border-radius: 0.5rem;
   background: rgb(241 245 249);
+}
+
+.dark .chat-markdown pre {
+  background: rgb(30 41 59);
 }
 
 .chat-markdown pre code {
@@ -146,6 +185,10 @@ body {
 .chat-markdown a {
   color: rgb(79 70 229);
   text-decoration: underline;
+}
+
+.dark .chat-markdown a {
+  color: rgb(165 180 252);
 }
 
 .chat-markdown-user code,

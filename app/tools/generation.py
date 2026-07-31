@@ -4,7 +4,7 @@ This is explicitly NOT protein design in the ProteinMPNN/RFdiffusion sense.
 It is a targeted LLM call that proposes candidate amino-acid sequences
 based on a parent sequence and an instruction. Every output is labeled
 `origin="llm_proposed"` and must never be presented as a validated or
-functionally-proven design - see the "Future work" note in ARCHITECTURE.md
+functionally-proven design - see the "Future work" note in docs/ARCHITECTURE.md
 for the planned ProteinMPNN-based upgrade path.
 
 This tool makes its own dedicated LLM call (via the same OpenRouter model

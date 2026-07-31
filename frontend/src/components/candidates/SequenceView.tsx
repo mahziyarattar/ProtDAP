@@ -43,7 +43,7 @@ export function SequenceView({ sequence, modifications }: SequenceViewProps) {
   const segments = buildSegments(sequence, modifications)
 
   return (
-    <p dir="ltr" className="sequence-mono ltr-isolate rounded bg-slate-50 p-2 text-[11px] text-slate-700">
+    <p dir="ltr" className="sequence-mono ltr-isolate rounded bg-slate-50 p-2 text-[11px] text-slate-700 transition-colors duration-150 dark:bg-slate-900 dark:text-slate-300">
       {segments.map((segment, index) =>
         segment.modification ? (
           <mark
@@ -51,7 +51,7 @@ export function SequenceView({ sequence, modifications }: SequenceViewProps) {
             title={`${segment.modification.original}${segment.modification.position}${segment.modification.new}${
               segment.modification.reason ? `: ${segment.modification.reason}` : ''
             }`}
-            className="cursor-help rounded bg-amber-200 px-0.5 text-amber-900"
+            className="cursor-help rounded bg-amber-200 px-0.5 text-amber-900 dark:bg-amber-800 dark:text-amber-100"
           >
             {segment.text}
           </mark>
