@@ -72,10 +72,14 @@ export function ChatPanel() {
           <MessageBubble key={turn.id} turn={turn} />
         ))}
         {isSending && (
-          <div className="flex w-full items-center gap-1.5 px-2 py-2">
-            <span className="h-2 w-2 animate-bounce rounded-full bg-slate-400 dark:bg-slate-500 [animation-delay:-0.2s]" />
-            <span className="h-2 w-2 animate-bounce rounded-full bg-slate-400 dark:bg-slate-500 [animation-delay:-0.1s]" />
-            <span className="h-2 w-2 animate-bounce rounded-full bg-slate-400 dark:bg-slate-500" />
+          <div
+            className="chat-message-enter flex w-full items-center gap-1.5 px-2 py-2"
+            aria-live="polite"
+            aria-label="Assistant is working"
+          >
+            <span className="chat-thinking-dot h-1.5 w-1.5 rounded-full bg-slate-400 dark:bg-slate-500" />
+            <span className="chat-thinking-dot h-1.5 w-1.5 rounded-full bg-slate-400 dark:bg-slate-500" />
+            <span className="chat-thinking-dot h-1.5 w-1.5 rounded-full bg-slate-400 dark:bg-slate-500" />
           </div>
         )}
         <div ref={bottomRef} />

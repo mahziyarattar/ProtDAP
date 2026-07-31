@@ -78,7 +78,7 @@ function UserMessageBubble({ turn }: { turn: Turn }) {
   }
 
   return (
-    <div className="group flex items-center justify-end gap-1.5">
+    <div className="chat-message-enter group flex items-center justify-end gap-1.5">
       <div className="flex shrink-0 items-center gap-1">
         <button
           type="button"
@@ -163,7 +163,7 @@ export function MessageBubble({ turn }: MessageBubbleProps) {
   }
 
   return (
-    <div className="w-full min-w-0 max-w-full px-2 text-sm">
+    <div className="chat-message-enter w-full min-w-0 max-w-full px-2 text-sm">
       <div
         dir="auto"
         className={`chat-markdown ${turn.isError ? 'text-red-700 dark:text-red-400' : 'text-slate-800 dark:text-slate-200'}`}
