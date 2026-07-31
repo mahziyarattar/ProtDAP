@@ -200,6 +200,19 @@ body {
   color: white;
 }
 
+.chat-markdown-user table {
+  color: inherit;
+}
+
+.chat-markdown-user thead {
+  background: rgb(255 255 255 / 0.15);
+  border-bottom-color: rgb(255 255 255 / 0.35);
+}
+
+.chat-markdown-user tr {
+  border-bottom-color: rgb(255 255 255 / 0.2);
+}
+
 /* Keep codes/accessions/sequences visually LTR inside RTL paragraphs. */
 .ltr-isolate {
   unicode-bidi: isolate;

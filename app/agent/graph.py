@@ -11,6 +11,7 @@ structured data.
 
 import json
 import logging
+import time
 from typing import Any, Dict, List, Optional, Tuple
 
 import httpx
@@ -37,6 +38,9 @@ TraceEntry = Dict[str, Any]
 
 logger = logging.getLogger("protdap.agent")
 
+# Sequence fields are long and noisy in logs; keep length only.
+_SEQUENCE_ARG_KEYS = frozenset({"sequence", "parent_sequence"})
+
 # Network / UniProt API failures: return JSON to the LLM instead of 500'ing /chat.
 _UNIPROT_SOFT_FAIL = (
     IdMappingError,
@@ -52,15 +56,43 @@ _UNIPROT_SOFT_FAIL = (
 RECURSION_LIMIT = 2 * MAX_TOOL_ITERATIONS + 8
 
 
+def _elapsed_ms(started: float) -> int:
+    return int((time.perf_counter() - started) * 1000)
+
+
+def _sanitize_args(args: Dict[str, Any]) -> Dict[str, Any]:
+    """Copy tool args for logging; replace raw sequences with length markers."""
+    out: Dict[str, Any] = {}
+    for key, value in args.items():
+        if key in _SEQUENCE_ARG_KEYS and isinstance(value, str):
+            out[key] = f"<seq len={len(value)}>"
+        else:
+            out[key] = value
+    return out
+
+
 def _record_tool(
     trace: List[TraceEntry],
     entry: TraceEntry,
     session_id: Optional[str],
+    *,
+    duration_ms: Optional[int] = None,
 ) -> None:
-    """Append to the request trace and emit one INFO summary line."""
+    """Append to the request trace; INFO summary + DEBUG sanitized args."""
     trace.append(entry)
     summary = summarize_trace([entry])[0]
-    logger.info("session=%s %s", session_id or "-", summary)
+    sid = session_id or "-"
+    if duration_ms is None:
+        logger.info("session=%s %s", sid, summary)
+    else:
+        logger.info("session=%s duration_ms=%s %s", sid, duration_ms, summary)
+    logger.debug(
+        "session=%s tool=%s args=%s result=%s",
+        sid,
+        entry.get("tool"),
+        _sanitize_args(entry.get("args") or {}),
+        summary,
+    )
 
 
 def _log_tool_error(
@@ -73,7 +105,7 @@ def _log_tool_error(
         "session=%s tool=%s args=%s failed: %s",
         session_id or "-",
         tool_name,
-        args,
+        _sanitize_args(args),
         exc,
         exc_info=True,
     )
@@ -95,6 +127,7 @@ def _soft_fail_uniprot(
     empty_result: Any,
     llm_payload: Dict[str, Any],
     extra_meta: Optional[Dict[str, Any]] = None,
+    duration_ms: Optional[int] = None,
 ) -> str:
     """Log, record empty/error trace entry, return JSON for the LLM (no raise)."""
     _log_tool_error(session_id, tool_name, args, exc)
@@ -111,6 +144,7 @@ def _soft_fail_uniprot(
             "meta": meta,
         },
         session_id,
+        duration_ms=duration_ms,
     )
     payload = dict(llm_payload)
     payload["error"] = error
@@ -129,16 +163,18 @@ def _build_tools(
         reviewed: bool = True,
         organism_id: Optional[str] = None,
     ) -> str:
-        """Search UniProtKB for real, existing proteins matching a plain-text
-        description (e.g. 'human proteins involved in immune response').
-        Returns a JSON list of hits with accession, protein_name, organism,
-        length, sequence, function."""
+        """Search UniProtKB for real, existing proteins matching plain-text
+        keywords (e.g. 'human proteins involved in immune response'). Do not
+        pass UniProt Lucene operators or field:value clauses in text — use
+        organism_id for taxonomy filters instead. Returns a JSON list of hits
+        with accession, protein_name, organism, length, sequence, function."""
         args = {
             "text": text,
             "size": size,
             "reviewed": reviewed,
             "organism_id": organism_id,
         }
+        started = time.perf_counter()
         try:
             result = await search_uniprot(
                 text=text, size=size, reviewed=reviewed, organism_id=organism_id
@@ -152,11 +188,13 @@ def _build_tools(
                 exc,
                 empty_result=[],
                 llm_payload={"results": []},
+                duration_ms=_elapsed_ms(started),
             )
         _record_tool(
             trace,
             {"tool": "search_uniprot", "args": args, "result": result},
             session_id,
+            duration_ms=_elapsed_ms(started),
         )
         return json.dumps(result)
 
@@ -164,6 +202,7 @@ def _build_tools(
     async def get_uniprot_entry_tool(accession: str) -> str:
         """Fetch one specific UniProtKB entry by accession (e.g. 'P01308')."""
         args = {"accession": accession}
+        started = time.perf_counter()
         try:
             result = await get_uniprot_entry(accession)
         except _UNIPROT_SOFT_FAIL as exc:
@@ -175,11 +214,13 @@ def _build_tools(
                 exc,
                 empty_result=None,
                 llm_payload={"accession": accession},
+                duration_ms=_elapsed_ms(started),
             )
         _record_tool(
             trace,
             {"tool": "get_uniprot_entry", "args": args, "result": result},
             session_id,
+            duration_ms=_elapsed_ms(started),
         )
         return json.dumps(result)
 
@@ -210,6 +251,7 @@ def _build_tools(
             raise ValueError(
                 f"from_db must be one of {list(ALLOWED_FROM_DB)}, got {from_db!r}"
             )
+        started = time.perf_counter()
         try:
             bundle = await map_to_uniprot(
                 ids=ids,
@@ -236,6 +278,7 @@ def _build_tools(
                     "failed_ids": list(ids or []),
                     "skipped_accessions": [],
                 },
+                duration_ms=_elapsed_ms(started),
             )
         proteins = bundle.get("proteins") or []
         _record_tool(
@@ -251,6 +294,7 @@ def _build_tools(
                 },
             },
             session_id,
+            duration_ms=_elapsed_ms(started),
         )
         return json.dumps(bundle)
 
@@ -271,6 +315,7 @@ def _build_tools(
             "k": k,
             "organism_id": organism_id,
         }
+        started = time.perf_counter()
         try:
             bundle = await search_protrek(
                 description=description, k=k, organism_id=organism_id
@@ -291,6 +336,7 @@ def _build_tools(
                 },
             },
             session_id,
+            duration_ms=_elapsed_ms(started),
         )
         return json.dumps(bundle)
 
@@ -318,6 +364,7 @@ def _build_tools(
             "instruction": instruction,
             "n": n,
         }
+        started = time.perf_counter()
         try:
             candidates = await propose_variants(
                 parent_sequence=parent_sequence,
@@ -332,6 +379,7 @@ def _build_tools(
             trace,
             {"tool": "propose_variants", "args": args, "result": candidates},
             session_id,
+            duration_ms=_elapsed_ms(started),
         )
 
         # Fold every candidate deterministically here, using the exact
@@ -346,6 +394,7 @@ def _build_tools(
                 continue
             fold_name = f"{parent_name}_candidate_{index}"
             fold_args = {"sequence": sequence, "name": fold_name}
+            fold_started = time.perf_counter()
             try:
                 fold_result = await biolm_client.fold_sequence(
                     sequence=sequence, name=fold_name
@@ -361,6 +410,7 @@ def _build_tools(
                     "result": fold_result,
                 },
                 session_id,
+                duration_ms=_elapsed_ms(fold_started),
             )
             candidate["fold_result"] = fold_result
 
@@ -372,6 +422,7 @@ def _build_tools(
         JSON with structure_available, mean_plddt (a confidence filter, not
         proof of function), model_source, and structure_id."""
         args = {"sequence": sequence, "name": name}
+        started = time.perf_counter()
         try:
             result = await biolm_client.fold_sequence(sequence=sequence, name=name)
         except Exception as exc:
@@ -381,6 +432,7 @@ def _build_tools(
             trace,
             {"tool": "fold_sequence", "args": args, "result": result},
             session_id,
+            duration_ms=_elapsed_ms(started),
         )
         return json.dumps(result)
 
@@ -390,6 +442,7 @@ def _build_tools(
         Returns JSON with a `score` field, which may be null if scoring
         failed - this never blocks the rest of the pipeline."""
         args = {"sequence": sequence}
+        started = time.perf_counter()
         try:
             result = await biolm_client.score_variant(sequence=sequence)
         except Exception as exc:
@@ -399,6 +452,7 @@ def _build_tools(
             trace,
             {"tool": "score_variant", "args": args, "result": result},
             session_id,
+            duration_ms=_elapsed_ms(started),
         )
         return json.dumps(result)
 
@@ -413,6 +467,7 @@ def _build_tools(
         map_to_uniprot / get_uniprot_entry actually returned — never invent.
         Does not remove other hits from the full retrieved list; it only marks
         recommendations for the UI."""
+        started = time.perf_counter()
         cleaned: List[str] = []
         seen: set = set()
         for raw in accessions or []:
@@ -426,6 +481,7 @@ def _build_tools(
             trace,
             {"tool": "recommend_proteins", "args": args, "result": cleaned},
             session_id,
+            duration_ms=_elapsed_ms(started),
         )
         return json.dumps({"recommended": cleaned, "reason": reason})
 

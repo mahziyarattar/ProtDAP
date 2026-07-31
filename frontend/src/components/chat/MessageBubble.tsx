@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import type { Components } from 'react-markdown'
+import remarkGfm from 'remark-gfm'
 import type { Turn } from '../../state/conversationStore'
 import { useConversation } from '../../state/conversationStore'
 import { TraceDetails } from './TraceDetails'
@@ -8,6 +9,8 @@ import { TraceDetails } from './TraceDetails'
 interface MessageBubbleProps {
   turn: Turn
 }
+
+const remarkPlugins = [remarkGfm]
 
 const userActionButtonClass =
   'inline-flex h-7 w-7 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-500 opacity-0 transition-all duration-150 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-700 focus:opacity-100 group-hover:opacity-100 group-focus-within:opacity-100 disabled:cursor-not-allowed disabled:opacity-40 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400 dark:hover:border-slate-600 dark:hover:bg-slate-700 dark:hover:text-slate-200'
@@ -28,6 +31,26 @@ const markdownComponents: Components = {
   h4: ({ children }) => <h4 className="mt-3 mb-1.5 font-bold leading-snug">{children}</h4>,
   h5: ({ children }) => <h5 className="mt-3 mb-1.5 font-bold leading-snug">{children}</h5>,
   h6: ({ children }) => <h6 className="mt-2 mb-1.5 font-bold leading-snug">{children}</h6>,
+  table: ({ children }) => (
+    <div className="my-2 w-full overflow-x-auto">
+      <table className="w-full min-w-[20rem] border-collapse text-start text-[0.9em] dark:text-slate-200">
+        {children}
+      </table>
+    </div>
+  ),
+  thead: ({ children }) => (
+    <thead className="border-b border-slate-300 bg-slate-200/70 dark:border-slate-600 dark:bg-slate-800/80">
+      {children}
+    </thead>
+  ),
+  tbody: ({ children }) => <tbody>{children}</tbody>,
+  tr: ({ children }) => (
+    <tr className="border-b border-slate-200 last:border-b-0 dark:border-slate-700">{children}</tr>
+  ),
+  th: ({ children }) => (
+    <th className="px-2.5 py-1.5 align-top font-semibold whitespace-nowrap">{children}</th>
+  ),
+  td: ({ children }) => <td className="px-2.5 py-1.5 align-top">{children}</td>,
 }
 
 const userMarkdownComponents: Components = {
@@ -121,7 +144,9 @@ function UserMessageBubble({ turn }: { turn: Turn }) {
       </div>
       <div className="max-w-[85%] rounded-2xl bg-indigo-600 px-4 py-2.5 text-sm text-white">
         <div dir="auto" className="chat-markdown chat-markdown-user">
-          <ReactMarkdown components={userMarkdownComponents}>{turn.text}</ReactMarkdown>
+          <ReactMarkdown remarkPlugins={remarkPlugins} components={userMarkdownComponents}>
+            {turn.text}
+          </ReactMarkdown>
         </div>
       </div>
     </div>
@@ -138,12 +163,14 @@ export function MessageBubble({ turn }: MessageBubbleProps) {
   }
 
   return (
-    <div className="w-full px-2 text-sm">
+    <div className="w-full min-w-0 max-w-full px-2 text-sm">
       <div
         dir="auto"
         className={`chat-markdown ${turn.isError ? 'text-red-700 dark:text-red-400' : 'text-slate-800 dark:text-slate-200'}`}
       >
-        <ReactMarkdown components={markdownComponents}>{turn.text}</ReactMarkdown>
+        <ReactMarkdown remarkPlugins={remarkPlugins} components={markdownComponents}>
+          {turn.text}
+        </ReactMarkdown>
       </div>
       {turn.traceSummary && <TraceDetails traceSummary={turn.traceSummary} />}
     </div>

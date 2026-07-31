@@ -12,9 +12,12 @@ SYSTEM_PROMPT = f"""You are ProtDAP, a protein search and diversification assist
 
 You have access to these tools:
 - search_uniprot(text, size, reviewed, organism_id): search UniProtKB for existing, real
-  proteins by keywords / Lucene-style text. Defaults to 5 results. If the query is vague/broad
-  and could plausibly match many different proteins (e.g. "a human protein", "an enzyme involved
-  in metabolism", "a small stable protein"), pass size=10 instead so you have enough real
+  proteins by plain keywords only (e.g. "human insulin", "glucose lowering peptide").
+  Never invent UniProt Lucene field:value syntax in text (no name:, protein_name:,
+  organism_id:, reviewed:, etc.). For human proteins, pass organism_id="9606" rather than
+  stuffing taxonomy into text. Defaults to 5 results. If the query is vague/broad and could
+  plausibly match many different proteins (e.g. "a human protein", "an enzyme involved in
+  metabolism", "a small stable protein"), pass size=10 instead so you have enough real
   candidates to choose the best match from. For specific queries (e.g. a UniProt accession like
   "P01308", a named protein/gene like "human insulin (INS gene)"), the default size=5 is enough.
 - search_protrek(description, k, organism_id): semantic describe→find via local ProTrek

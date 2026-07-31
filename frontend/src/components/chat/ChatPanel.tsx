@@ -22,7 +22,7 @@ export function ChatPanel() {
   }
 
   return (
-    <div className="flex h-full flex-col bg-slate-100 transition-colors duration-150 dark:bg-slate-900">
+    <div className="flex h-full min-w-0 flex-col bg-slate-100 transition-colors duration-150 dark:bg-slate-900">
       <header className="protdap-chat-header flex shrink-0 items-center justify-between border-b border-slate-200 bg-white px-4 transition-colors duration-150 dark:border-slate-800 dark:bg-slate-900">
         <div className="min-w-0">
           <h1 className="text-base font-semibold leading-tight text-slate-900 dark:text-slate-100">ProtDAP</h1>
@@ -61,7 +61,7 @@ export function ChatPanel() {
         </div>
       </header>
 
-      <div className="flex-1 space-y-3 overflow-y-auto px-4 py-4">
+      <div className="min-h-0 min-w-0 flex-1 space-y-3 overflow-y-auto overflow-x-hidden px-4 py-4">
         {turns.length === 0 && (
           <div className="mx-auto mt-12 max-w-sm text-center text-sm text-slate-400 dark:text-slate-500">
             Ask about a protein, e.g. "Find a small human protein and propose 3 more stable

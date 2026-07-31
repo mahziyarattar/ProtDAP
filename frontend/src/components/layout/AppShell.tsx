@@ -20,7 +20,7 @@ export function AppShell() {
 
   return (
     <div className="grid h-screen w-screen grid-cols-1 overflow-hidden lg:grid-cols-[1fr_380px]">
-      <div className="min-h-0">
+      <div className="min-h-0 min-w-0 overflow-hidden">
         <ChatPanel />
       </div>
       <div className="hidden min-h-0 flex-col border-l border-slate-200 bg-white transition-colors duration-150 dark:border-slate-800 dark:bg-slate-900 lg:flex">

@@ -10,6 +10,7 @@ session history is updated for the next turn.
 
 import asyncio
 import logging
+import os
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, Request, Response
@@ -28,8 +29,29 @@ from app.tools.generation import VALID_AMINO_ACIDS
 logger = logging.getLogger("protdap")
 
 
+def _configure_logging() -> None:
+    """Attach stderr handler for protdap.* (uvicorn --log-level alone won't)."""
+    env_level = os.getenv("LOG_LEVEL")
+    if env_level:
+        level = getattr(logging, env_level.upper(), logging.INFO)
+    else:
+        uvicorn_level = logging.getLogger("uvicorn").level
+        level = uvicorn_level if uvicorn_level != logging.NOTSET else logging.INFO
+
+    root = logging.getLogger("protdap")
+    root.setLevel(level)
+    if not root.handlers:
+        handler = logging.StreamHandler()
+        handler.setFormatter(
+            logging.Formatter("%(levelname)s:     %(name)s - %(message)s")
+        )
+        root.addHandler(handler)
+    root.propagate = False
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    _configure_logging()
     config.validate()
     # One-off connectivity check at startup (spawn, handshake, close) so
     # misconfiguration (bad token, missing npx) is visible in the logs
