@@ -10,6 +10,7 @@ export interface Turn {
   isError?: boolean
   retrievedProteins?: ProteinHit[]
   candidates?: Candidate[]
+  highlightedAccessions?: string[]
   traceSummary?: string[]
 }
 
@@ -17,15 +18,17 @@ interface ConversationState {
   turns: Turn[]
   allRetrievedProteins: ProteinHit[]
   allCandidates: Candidate[]
+  allHighlightedAccessions: string[]
   isSending: boolean
 }
 
-const STORAGE_KEY = 'protdap.conversation.v1'
+const STORAGE_KEY = 'protdap.conversation.v2'
 
 const initialState: ConversationState = {
   turns: [],
   allRetrievedProteins: [],
   allCandidates: [],
+  allHighlightedAccessions: [],
   isSending: false,
 }
 
@@ -51,13 +54,25 @@ function mergeCandidates(existing: Candidate[], incoming: Candidate[]): Candidat
   return dedupeByKey([...existing, ...incoming], (candidate) => candidate.sequence)
 }
 
+function mergeHighlightedAccessions(existing: string[], incoming: string[]): string[] {
+  const seen = new Set(existing)
+  const merged = [...existing]
+  for (const accession of incoming) {
+    if (!accession || seen.has(accession)) continue
+    seen.add(accession)
+    merged.push(accession)
+  }
+  return merged
+}
+
 /** Recompute accumulated panels from per-turn payloads (source of truth). */
 function rebuildAccumulators(turns: Turn[]): Pick<
   ConversationState,
-  'allRetrievedProteins' | 'allCandidates'
+  'allRetrievedProteins' | 'allCandidates' | 'allHighlightedAccessions'
 > {
   let allRetrievedProteins: ProteinHit[] = []
   let allCandidates: Candidate[] = []
+  let allHighlightedAccessions: string[] = []
   for (const turn of turns) {
     if (turn.retrievedProteins?.length) {
       allRetrievedProteins = mergeRetrievedProteins(allRetrievedProteins, turn.retrievedProteins)
@@ -65,8 +80,14 @@ function rebuildAccumulators(turns: Turn[]): Pick<
     if (turn.candidates?.length) {
       allCandidates = mergeCandidates(allCandidates, turn.candidates)
     }
+    if (turn.highlightedAccessions?.length) {
+      allHighlightedAccessions = mergeHighlightedAccessions(
+        allHighlightedAccessions,
+        turn.highlightedAccessions,
+      )
+    }
   }
-  return { allRetrievedProteins, allCandidates }
+  return { allRetrievedProteins, allCandidates, allHighlightedAccessions }
 }
 
 function reducer(state: ConversationState, action: Action): ConversationState {
@@ -93,13 +114,12 @@ function reducer(state: ConversationState, action: Action): ConversationState {
 
 function loadPersistedState(): ConversationState | null {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY)
+    // Prefer v2; fall back to v1 turns so refresh after upgrade keeps history.
+    const raw =
+      localStorage.getItem(STORAGE_KEY) ?? localStorage.getItem('protdap.conversation.v1')
     if (!raw) return null
     const parsed = JSON.parse(raw) as ConversationState
     const turns = Array.isArray(parsed.turns) ? parsed.turns : []
-    // Always rebuild panel lists from turns so a prior buggy persist that
-    // kept reply text but dropped allRetrievedProteins/allCandidates still
-    // restores the cards after refresh.
     return {
       turns,
       ...rebuildAccumulators(turns),
@@ -133,6 +153,7 @@ interface ConversationContextValue {
   turns: Turn[]
   allRetrievedProteins: ProteinHit[]
   allCandidates: Candidate[]
+  allHighlightedAccessions: string[]
   isSending: boolean
   sendMessage: (message: string) => Promise<void>
   resetConversation: () => void
@@ -166,6 +187,7 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
           text: response.reply,
           retrievedProteins: response.retrieved_proteins,
           candidates: response.candidates,
+          highlightedAccessions: response.highlighted_accessions ?? [],
           traceSummary: response.tool_trace_summary,
         },
       })
@@ -190,6 +212,7 @@ export function ConversationProvider({ children }: { children: ReactNode }) {
       turns: state.turns,
       allRetrievedProteins: state.allRetrievedProteins,
       allCandidates: state.allCandidates,
+      allHighlightedAccessions: state.allHighlightedAccessions,
       isSending: state.isSending,
       sendMessage,
       resetConversation,

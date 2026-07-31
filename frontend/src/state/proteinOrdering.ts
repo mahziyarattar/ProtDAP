@@ -23,3 +23,27 @@ export function sortProteinsWithUsedParentsFirst(
   }
   return [...used, ...rest]
 }
+
+/**
+ * Panel order: recommended (highlighted) first, then used-as-parent,
+ * then the rest. Relative order within each bucket is preserved.
+ */
+export function sortProteinsForPanel(
+  proteins: ProteinHit[],
+  highlightedAccessions: Set<string>,
+  usedAccessions: Set<string>,
+): ProteinHit[] {
+  const recommended: ProteinHit[] = []
+  const used: ProteinHit[] = []
+  const rest: ProteinHit[] = []
+  for (const protein of proteins) {
+    if (highlightedAccessions.has(protein.accession)) {
+      recommended.push(protein)
+    } else if (usedAccessions.has(protein.accession)) {
+      used.push(protein)
+    } else {
+      rest.push(protein)
+    }
+  }
+  return [...recommended, ...used, ...rest]
+}

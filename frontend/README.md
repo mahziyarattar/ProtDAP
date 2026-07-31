@@ -5,7 +5,9 @@ React + Vite + TypeScript + Tailwind panel for the ProtDAP backend
 hit and proposed candidate from the whole conversation accumulates in the
 right-hand tabs (Proteins / Candidates / Structures), with inline
 highlighting of proposed mutations and a single Mol* viewer that can
-overlay up to 5 selected structures.
+overlay up to 5 selected structures. The Proteins tab lists every
+retrieved hit; when the agent calls `recommend_proteins`, recommended
+accessions sort to the top with a badge and others are dimmed.
 
 ## Prerequisites
 

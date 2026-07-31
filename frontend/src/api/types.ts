@@ -65,6 +65,7 @@ export interface ChatResponse {
   retrieved_proteins: ProteinHit[]
   candidates: Candidate[]
   tool_trace_summary: string[]
+  highlighted_accessions: string[]
 }
 
 export interface LivenessResponse {

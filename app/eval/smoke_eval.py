@@ -102,7 +102,7 @@ async def run_case_1_search_only() -> CaseResult:
     from app.agent.graph import run_agent
 
     _, trace = await run_agent("Find human proteins involved in immune response.")
-    retrieved, candidates = assemble_response(trace)
+    retrieved, candidates, _ = assemble_response(trace)
     tool_names = {entry["tool"] for entry in trace}
 
     details = [
@@ -123,7 +123,7 @@ async def run_case_2_and_3_diversify() -> List[CaseResult]:
     reply, trace = await run_agent(
         "Find a small human protein and propose 3 more stable variants of it."
     )
-    retrieved, candidates = assemble_response(trace)
+    retrieved, candidates, _ = assemble_response(trace)
     propose_calls = [entry for entry in trace if entry["tool"] == "propose_variants"]
 
     case2_details = [
@@ -169,7 +169,7 @@ async def run_case_4_default_result_size() -> CaseResult:
     from app.agent.graph import run_agent
 
     _, trace = await run_agent("Find proteins involved in immune response.")
-    retrieved, _ = assemble_response(trace)
+    retrieved, _, _ = assemble_response(trace)
 
     details = [f"retrieved_proteins: {len(retrieved)}", f"DEFAULT_RESULT_SIZE: {config.default_result_size}"]
     passed = len(retrieved) > 1

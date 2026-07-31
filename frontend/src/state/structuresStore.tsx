@@ -13,7 +13,7 @@ import type { Candidate, ProteinHit, StructureInfo } from '../api/types'
 import { useConversation } from './conversationStore'
 import {
   parentAccessionsFromCandidates,
-  sortProteinsWithUsedParentsFirst,
+  sortProteinsForPanel,
 } from './proteinOrdering'
 
 export const MAX_OVERLAY_STRUCTURES = 5
@@ -41,6 +41,8 @@ export interface StructureCatalogItem {
   meanPlddt: number | null
   /** True when this retrieved protein is a parent of at least one candidate. */
   usedAsParent: boolean
+  /** LLM shortlist from structured final reply (proteins only). */
+  recommended?: boolean
 }
 
 export type FoldStatus = 'idle' | 'loading' | 'ready' | 'error'
@@ -80,9 +82,13 @@ export function candidateStructureId(sequence: string): string {
   return `candidate:${sequence}`
 }
 
-function buildCatalog(proteins: ProteinHit[], candidates: Candidate[]): StructureCatalogItem[] {
+function buildCatalog(
+  proteins: ProteinHit[],
+  candidates: Candidate[],
+  highlightedAccessions: Set<string>,
+): StructureCatalogItem[] {
   const usedAccessions = parentAccessionsFromCandidates(candidates)
-  const orderedProteins = sortProteinsWithUsedParentsFirst(proteins, usedAccessions)
+  const orderedProteins = sortProteinsForPanel(proteins, highlightedAccessions, usedAccessions)
 
   const proteinItems: StructureCatalogItem[] = orderedProteins.map((protein) => ({
     id: proteinStructureId(protein.accession),
@@ -93,6 +99,7 @@ function buildCatalog(proteins: ProteinHit[], candidates: Candidate[]): Structur
     knownStructureId: null,
     meanPlddt: null,
     usedAsParent: usedAccessions.has(protein.accession),
+    recommended: highlightedAccessions.has(protein.accession),
   }))
 
   const candidateItems: StructureCatalogItem[] = candidates.map((candidate, index) => {
@@ -114,7 +121,7 @@ function buildCatalog(proteins: ProteinHit[], candidates: Candidate[]): Structur
 }
 
 export function StructuresProvider({ children }: { children: ReactNode }) {
-  const { allRetrievedProteins, allCandidates } = useConversation()
+  const { allRetrievedProteins, allCandidates, allHighlightedAccessions } = useConversation()
   const [activeTab, setActiveTab] = useState<RightPanelTab>('proteins')
   const [selectedIds, setSelectedIds] = useState<string[]>([])
   const [foldById, setFoldById] = useState<Record<string, FoldEntry>>({})
@@ -128,9 +135,14 @@ export function StructuresProvider({ children }: { children: ReactNode }) {
   const sequenceFoldCache = useRef(new Map<string, StructureInfo>())
   const inflightSequences = useRef(new Set<string>())
 
+  const highlightedAccessions = useMemo(
+    () => new Set(allHighlightedAccessions),
+    [allHighlightedAccessions],
+  )
+
   const catalog = useMemo(
-    () => buildCatalog(allRetrievedProteins, allCandidates),
-    [allRetrievedProteins, allCandidates],
+    () => buildCatalog(allRetrievedProteins, allCandidates, highlightedAccessions),
+    [allRetrievedProteins, allCandidates, highlightedAccessions],
   )
 
   const catalogById = useMemo(() => {
