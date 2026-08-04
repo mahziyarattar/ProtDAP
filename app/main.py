@@ -1,4 +1,4 @@
-"""ProtDAP FastAPI app: POST /chat, GET /structures/{id}, GET /liveness.
+"""ProtDAP FastAPI app: POST /chat, POST /chat/stream, GET /structures/{id}, GET /liveness.
 
 Request flow: a session cookie identifies an in-memory conversation history
 -> the ReAct agent (app/agent/graph.py) runs with that history and produces
@@ -6,19 +6,25 @@ a natural-language reply plus a raw tool-call trace -> the deterministic
 assembler (app/agent/assembler.py) turns that trace into schema-conformant
 `retrieved_proteins` / `candidates` -> the response is returned and the
 session history is updated for the next turn.
+
+`POST /chat` returns one JSON `ChatResponse`. `POST /chat/stream` streams
+the same turn as SSE (`status` / `token` / `done` / `error`) and ends with
+a `done` event whose payload matches `ChatResponse`.
 """
 
 import asyncio
+import json
 import logging
 import os
 from contextlib import asynccontextmanager
+from typing import Any, AsyncIterator, Dict
 
 from fastapi import FastAPI, HTTPException, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import PlainTextResponse
+from fastapi.responses import PlainTextResponse, StreamingResponse
 
 from app.agent.assembler import assemble_response, summarize_trace
-from app.agent.graph import run_agent
+from app.agent.graph import run_agent, run_agent_stream
 from app.config import config
 from app.models import ChatRequest, ChatResponse, FoldRequest, StructureInfo
 from app.session import SESSION_COOKIE_NAME, get_session_store
@@ -99,6 +105,35 @@ app.add_middleware(
 )
 
 
+def _set_session_cookie(response: Response, session_id: str) -> None:
+    response.set_cookie(
+        key=SESSION_COOKIE_NAME,
+        value=session_id,
+        max_age=config.session_ttl_seconds,
+        httponly=True,
+        samesite="lax",
+    )
+
+
+def _commit_chat_turn(
+    session_id: str,
+    user_message: str,
+    reply_text: str,
+    retrieved_proteins: list,
+) -> None:
+    session_store = get_session_store(config.session_ttl_seconds)
+    session_store.append_history(session_id, "user", user_message)
+    session_store.append_history(session_id, "assistant", reply_text)
+    if retrieved_proteins:
+        session_store.set_last_retrieved_proteins(
+            session_id, [protein.model_dump() for protein in retrieved_proteins]
+        )
+
+
+def _sse_event(event: str, data: Dict[str, Any]) -> str:
+    return f"event: {event}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
+
+
 @app.get("/liveness")
 async def liveness():
     biolm_client = get_biolm_client(config.biolm_token)
@@ -125,20 +160,8 @@ async def chat(chat_request: ChatRequest, request: Request, response: Response) 
     retrieved_proteins, candidates, highlighted_accessions = assemble_response(trace)
     tool_trace_summary = summarize_trace(trace)
 
-    session_store.append_history(session_id, "user", chat_request.message)
-    session_store.append_history(session_id, "assistant", reply_text)
-    if retrieved_proteins:
-        session_store.set_last_retrieved_proteins(
-            session_id, [protein.model_dump() for protein in retrieved_proteins]
-        )
-
-    response.set_cookie(
-        key=SESSION_COOKIE_NAME,
-        value=session_id,
-        max_age=config.session_ttl_seconds,
-        httponly=True,
-        samesite="lax",
-    )
+    _commit_chat_turn(session_id, chat_request.message, reply_text, retrieved_proteins)
+    _set_session_cookie(response, session_id)
 
     return ChatResponse(
         reply=reply_text,
@@ -147,6 +170,70 @@ async def chat(chat_request: ChatRequest, request: Request, response: Response) 
         tool_trace_summary=tool_trace_summary,
         highlighted_accessions=highlighted_accessions,
     )
+
+
+@app.post("/chat/stream")
+async def chat_stream(chat_request: ChatRequest, request: Request) -> StreamingResponse:
+    """SSE stream for one chat turn. Same body as POST /chat.
+
+    Events:
+      - status: ``{"message": "..."}``
+      - token: ``{"delta": "..."}``
+      - done: full ``ChatResponse`` JSON (structured lists only here)
+      - error: ``{"detail": "..."}``
+    """
+    session_store = get_session_store(config.session_ttl_seconds)
+    incoming_session_id = request.cookies.get(SESSION_COOKIE_NAME)
+    session_id, _session_data = session_store.get_or_create(incoming_session_id)
+    history = session_store.get_history(session_id)
+
+    async def event_generator() -> AsyncIterator[str]:
+        reply_text = ""
+        trace: list = []
+        try:
+            async for event in run_agent_stream(
+                user_message=chat_request.message,
+                history=history,
+                session_id=session_id,
+            ):
+                etype = event.get("type")
+                if etype == "status":
+                    yield _sse_event("status", {"message": event["message"]})
+                elif etype == "token":
+                    yield _sse_event("token", {"delta": event["delta"]})
+                elif etype == "final":
+                    reply_text = event["reply"]
+                    trace = event["trace"]
+
+            retrieved_proteins, candidates, highlighted_accessions = assemble_response(trace)
+            tool_trace_summary = summarize_trace(trace)
+            _commit_chat_turn(
+                session_id, chat_request.message, reply_text, retrieved_proteins
+            )
+
+            done_payload = ChatResponse(
+                reply=reply_text,
+                retrieved_proteins=retrieved_proteins,
+                candidates=candidates,
+                tool_trace_summary=tool_trace_summary,
+                highlighted_accessions=highlighted_accessions,
+            ).model_dump()
+            yield _sse_event("done", done_payload)
+        except Exception as exc:
+            logger.exception("chat/stream failed (session_id=%s)", session_id)
+            yield _sse_event("error", {"detail": str(exc) or exc.__class__.__name__})
+
+    response = StreamingResponse(
+        event_generator(),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "Connection": "keep-alive",
+            "X-Accel-Buffering": "no",
+        },
+    )
+    _set_session_cookie(response, session_id)
+    return response
 
 
 @app.post("/fold", response_model=StructureInfo)

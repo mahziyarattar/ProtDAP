@@ -12,7 +12,7 @@ structured data.
 import json
 import logging
 import time
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, AsyncIterator, Dict, List, Optional, Tuple
 
 import httpx
 from langchain_core.messages import AIMessage
@@ -54,6 +54,21 @@ _UNIPROT_SOFT_FAIL = (
 # one recursion step. Cap generously above the intended iteration count so
 # hitting the limit is always a real runaway loop, not a normal multi-tool turn.
 RECURSION_LIMIT = 2 * MAX_TOOL_ITERATIONS + 8
+
+# create_react_agent graph node that owns the ReAct LLM (not tools / nested LLMs).
+_AGENT_NODE = "agent"
+
+# LangChain @tool names are the wrapper function names (*_tool); map to UI status.
+_TOOL_STATUS_MESSAGES: Dict[str, str] = {
+    "search_uniprot_tool": "Searching UniProt…",
+    "get_uniprot_entry_tool": "Fetching UniProt entry…",
+    "map_to_uniprot_tool": "Mapping identifiers to UniProt…",
+    "search_protrek_tool": "Searching ProTrek…",
+    "propose_variants_tool": "Proposing sequence variants…",
+    "fold_sequence_tool": "Folding sequence…",
+    "score_variant_tool": "Scoring variant…",
+    "recommend_proteins_tool": "Selecting recommended proteins…",
+}
 
 
 def _elapsed_ms(started: float) -> int:
@@ -501,13 +516,69 @@ def _build_tools(
     return tools
 
 
-def _build_model() -> ChatOpenAI:
+def _build_model(*, streaming: bool = False) -> ChatOpenAI:
     return ChatOpenAI(
         model=config.openrouter_model,
         api_key=config.openrouter_api_key,
         base_url=config.openrouter_base_url,
         temperature=0.2,
+        streaming=streaming,
     )
+
+
+def _chunk_text(chunk: Any) -> str:
+    """Extract displayable text from an AIMessageChunk (skip tool-call JSON)."""
+    text_attr = getattr(chunk, "text", None)
+    if isinstance(text_attr, str) and text_attr:
+        return text_attr
+
+    content = getattr(chunk, "content", None)
+    if isinstance(content, str):
+        return content
+    if isinstance(content, list):
+        parts: List[str] = []
+        for block in content:
+            if isinstance(block, str):
+                parts.append(block)
+            elif isinstance(block, dict):
+                block_type = block.get("type")
+                if block_type in ("tool_use", "tool_call", "tool_call_chunk"):
+                    continue
+                if isinstance(block.get("text"), str):
+                    parts.append(block["text"])
+        return "".join(parts)
+    return ""
+
+
+def _tool_call_name(tool_call: Any) -> Optional[str]:
+    if isinstance(tool_call, dict):
+        name = tool_call.get("name")
+        return name if isinstance(name, str) else None
+    name = getattr(tool_call, "name", None)
+    return name if isinstance(name, str) else None
+
+
+def _status_events_from_update(update: Dict[str, Any]) -> List[Dict[str, str]]:
+    """Map agent-node updates that request tools into human-friendly status events."""
+    events: List[Dict[str, str]] = []
+    agent_update = update.get(_AGENT_NODE)
+    if not isinstance(agent_update, dict):
+        return events
+    messages = agent_update.get("messages") or []
+    for message in messages:
+        tool_calls = getattr(message, "tool_calls", None) or []
+        if isinstance(message, dict):
+            tool_calls = message.get("tool_calls") or tool_calls
+        for tool_call in tool_calls:
+            name = _tool_call_name(tool_call)
+            if not name:
+                continue
+            status = _TOOL_STATUS_MESSAGES.get(name)
+            if status:
+                events.append({"type": "status", "message": status})
+            else:
+                events.append({"type": "status", "message": f"Running {name}…"})
+    return events
 
 
 async def run_agent(
@@ -523,7 +594,7 @@ async def run_agent(
     """
     trace: List[TraceEntry] = []
     tools = _build_tools(trace, session_id=session_id)
-    model = _build_model()
+    model = _build_model(streaming=False)
     agent = create_react_agent(model, tools, prompt=SYSTEM_PROMPT)
 
     messages = list(history or [])
@@ -538,12 +609,74 @@ async def run_agent(
     return reply_text, trace
 
 
+async def run_agent_stream(
+    user_message: str,
+    history: Optional[List[Dict[str, str]]] = None,
+    session_id: Optional[str] = None,
+) -> AsyncIterator[Dict[str, Any]]:
+    """Stream one ProtDAP agent turn for SSE.
+
+    Yields dict events:
+      - ``{"type": "status", "message": "..."}`` tool / thinking progress
+      - ``{"type": "token", "delta": "..."}`` ReAct agent text only
+      - ``{"type": "final", "reply": "...", "trace": [...]}`` end of turn
+
+    Nested LLMs (e.g. ``propose_variants``) are filtered out by only
+    forwarding ``messages`` chunks from the ``agent`` graph node.
+    """
+    trace: List[TraceEntry] = []
+    tools = _build_tools(trace, session_id=session_id)
+    model = _build_model(streaming=True)
+    agent = create_react_agent(model, tools, prompt=SYSTEM_PROMPT)
+
+    messages = list(history or [])
+    messages.append({"role": "user", "content": user_message})
+
+    yield {"type": "status", "message": "Thinking…"}
+
+    final_state: Optional[Dict[str, Any]] = None
+    async for mode, chunk in agent.astream(
+        {"messages": messages},
+        config={"recursion_limit": RECURSION_LIMIT},
+        stream_mode=["messages", "updates", "values"],
+    ):
+        if mode == "messages":
+            message_chunk, metadata = chunk
+            if not isinstance(metadata, dict):
+                continue
+            if metadata.get("langgraph_node") != _AGENT_NODE:
+                continue
+            # Skip pure tool-call chunks; only forward visible assistant text.
+            if getattr(message_chunk, "tool_call_chunks", None) and not _chunk_text(
+                message_chunk
+            ):
+                continue
+            delta = _chunk_text(message_chunk)
+            if delta:
+                yield {"type": "token", "delta": delta}
+        elif mode == "updates":
+            if isinstance(chunk, dict):
+                for event in _status_events_from_update(chunk):
+                    yield event
+        elif mode == "values":
+            if isinstance(chunk, dict):
+                final_state = chunk
+
+    reply_text = _extract_reply((final_state or {}).get("messages") or [])
+    yield {"type": "final", "reply": reply_text, "trace": trace}
+
+
 def _extract_reply(messages: List[Any]) -> str:
     for message in reversed(messages):
-        if isinstance(message, AIMessage) and isinstance(message.content, str) and message.content.strip():
-            return message.content
+        if isinstance(message, AIMessage):
+            text = _chunk_text(message)
+            if text.strip():
+                return text
         if isinstance(message, dict) and message.get("role") == "assistant":
             content = message.get("content")
             if isinstance(content, str) and content.strip():
                 return content
+            text = _chunk_text(message)
+            if text.strip():
+                return text
     return "I wasn't able to produce a response for that request."

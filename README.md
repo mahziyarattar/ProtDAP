@@ -15,8 +15,9 @@ client) over rebuilding a private protein database from scratch.
 
 ## What it actually does
 
-1. You send a message to `POST /chat` (e.g. *"Find a small human protein
-   and propose 3 more stable variants"*).
+1. You send a message to `POST /chat` or `POST /chat/stream` (e.g. *"Find a
+   small human protein and propose 3 more stable variants"*). The React UI
+   always uses the streaming endpoint.
 2. A LangGraph ReAct agent (Gemini 2.5 Flash via OpenRouter) decides which
    tools to call: `search_uniprot`, `map_to_uniprot`, `get_uniprot_entry`,
    `search_protrek` (optional), `propose_variants`, `fold_sequence`,
@@ -28,7 +29,9 @@ client) over rebuilding a private protein database from scratch.
    regardless of what the model's prose says.
 5. You get back a natural-language `reply` plus the structured, labeled
    data - and can fetch any predicted structure's PDB text from
-   `GET /structures/{structure_id}` for 3D visualization.
+   `GET /structures/{structure_id}` for 3D visualization. On
+   `/chat/stream`, progress and reply tokens arrive as SSE events; the
+   structured lists arrive only in the final `done` event.
 6. Separately from the chat loop, `POST /fold` lets the frontend (or any
    client) fold an arbitrary sequence on demand - used so a retrieved
    search hit can be viewed in 3D without asking the agent to fold it.
@@ -117,9 +120,11 @@ npm install
 npm run dev
 ```
 
-Opens on `http://localhost:5173`. In dev, Vite proxies `/chat`, `/fold`,
-`/structures/*`, and `/liveness` to the backend so the session cookie is
-same-origin. The right panel is tabbed (Proteins / Candidates / Structures);
+Opens on `http://localhost:5173`. In dev, Vite proxies `/chat` (including
+`/chat/stream`), `/fold`, `/structures/*`, and `/liveness` to the backend so
+the session cookie is same-origin. The chat UI uses SSE against
+`POST /chat/stream` (status line + partial reply; structured lists on
+`done`). The right panel is tabbed (Proteins / Candidates / Structures);
 the Structures tab overlays up to 5 selected molecules in one Mol* viewer
 (fold-on-select via `POST /fold` for unfolder proteins). Cards link via
 "View in Structures". Details in [frontend/README.md](frontend/README.md).
@@ -159,13 +164,15 @@ UniProt and BioLM APIs.
 
 ```
 app/
-  main.py              FastAPI app: POST /chat, POST /fold, GET /structures/{id}, GET /liveness
+  main.py              FastAPI app: POST /chat, POST /chat/stream, POST /fold,
+                       GET /structures/{id}, GET /liveness
   config.py            Environment-based configuration + validation
   models.py            Pydantic schemas (ChatRequest/Response, FoldRequest, ProteinHit, Candidate, ...)
   session.py           In-memory, cookie-backed session store
   structure_cache.py   In-memory {structure_id: pdb_text} cache
   agent/
     graph.py           Builds/runs the LangGraph ReAct agent + tool trace
+                       (ainvoke + astream for SSE)
     prompts.py         System prompt (search/diversify/fold rules)
     assembler.py       Deterministic trace -> retrieved_proteins/candidates
   tools/

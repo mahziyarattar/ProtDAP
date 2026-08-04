@@ -171,6 +171,12 @@ export function MessageBubble({ turn }: MessageBubbleProps) {
         <ReactMarkdown remarkPlugins={remarkPlugins} components={markdownComponents}>
           {turn.text}
         </ReactMarkdown>
+        {turn.isStreaming && turn.text && (
+          <span
+            className="ml-0.5 inline-block h-3.5 w-1.5 animate-pulse bg-slate-400 align-middle dark:bg-slate-500"
+            aria-hidden
+          />
+        )}
       </div>
       {turn.traceSummary && <TraceDetails traceSummary={turn.traceSummary} />}
     </div>

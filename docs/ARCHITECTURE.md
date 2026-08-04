@@ -30,7 +30,7 @@
 
 ```mermaid
 flowchart TD
-    Client["HTTP client (curl / future UI)"] -->|"POST /chat"| FastAPI
+    Client["HTTP client / React UI"] -->|"POST /chat or /chat/stream"| FastAPI
     FastAPI -->|"session cookie"| SessionStore["In-memory session store"]
     FastAPI --> Agent["LangGraph ReAct agent (Gemini 2.5 Flash via OpenRouter)"]
     Agent -->|"tool call"| SearchTool["search_uniprot / get_uniprot_entry"]
@@ -47,7 +47,7 @@ flowchart TD
     Assembler --> StructureCache["In-memory PDB cache"]
     Assembler --> Response["ChatResponse: reply + retrieved_proteins + candidates"]
     Response --> FastAPI
-    FastAPI --> Client
+    FastAPI -->|"JSON or SSE status/token/done"| Client
 ```
 
 ## Reliability design: trace-based assembly, not LLM-parsed JSON

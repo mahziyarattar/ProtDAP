@@ -5,13 +5,13 @@ import { useConversation } from '../../state/conversationStore'
 import { MessageBubble } from './MessageBubble'
 
 export function ChatPanel() {
-  const { turns, isSending, sendMessage, resetConversation } = useConversation()
+  const { turns, isSending, streamStatus, sendMessage, resetConversation } = useConversation()
   const [draft, setDraft] = useState('')
   const bottomRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [turns, isSending])
+  }, [turns, isSending, streamStatus])
 
   async function handleSubmit(event: FormEvent) {
     event.preventDefault()
@@ -68,20 +68,35 @@ export function ChatPanel() {
             variants."
           </div>
         )}
-        {turns.map((turn) => (
-          <MessageBubble key={turn.id} turn={turn} />
-        ))}
-        {isSending && (
-          <div
-            className="chat-message-enter flex w-full items-center gap-1.5 px-2 py-2"
-            aria-live="polite"
-            aria-label="Assistant is working"
-          >
-            <span className="chat-thinking-dot h-1.5 w-1.5 rounded-full bg-slate-400 dark:bg-slate-500" />
-            <span className="chat-thinking-dot h-1.5 w-1.5 rounded-full bg-slate-400 dark:bg-slate-500" />
-            <span className="chat-thinking-dot h-1.5 w-1.5 rounded-full bg-slate-400 dark:bg-slate-500" />
-          </div>
-        )}
+        {turns.map((turn) => {
+          const isStreamingAssistant =
+            turn.role === 'assistant' && turn.isStreaming && isSending
+          return (
+            <div key={turn.id}>
+              {isStreamingAssistant && streamStatus && (
+                <div
+                  className="chat-message-enter mb-1.5 flex items-center gap-2 px-2 text-xs text-slate-500 dark:text-slate-400"
+                  aria-live="polite"
+                >
+                  <span className="chat-thinking-dot h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400 dark:bg-slate-500" />
+                  <span>{streamStatus}</span>
+                </div>
+              )}
+              {(turn.text || !turn.isStreaming) && <MessageBubble turn={turn} />}
+              {isStreamingAssistant && !turn.text && !streamStatus && (
+                <div
+                  className="chat-message-enter flex w-full items-center gap-1.5 px-2 py-2"
+                  aria-live="polite"
+                  aria-label="Assistant is working"
+                >
+                  <span className="chat-thinking-dot h-1.5 w-1.5 rounded-full bg-slate-400 dark:bg-slate-500" />
+                  <span className="chat-thinking-dot h-1.5 w-1.5 rounded-full bg-slate-400 dark:bg-slate-500" />
+                  <span className="chat-thinking-dot h-1.5 w-1.5 rounded-full bg-slate-400 dark:bg-slate-500" />
+                </div>
+              )}
+            </div>
+          )
+        })}
         <div ref={bottomRef} />
       </div>
 

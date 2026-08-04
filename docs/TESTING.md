@@ -9,7 +9,7 @@ Curl-based checks against a running ProtDAP server. For automated tests
 2. Server running (from Run and Debug, or `uvicorn app.main:app --reload`).
 3. Base URL: `http://localhost:8000`.
 
-`/chat` can take tens of seconds (LLM + UniProt + BioLM MCP spawn/fold).
+`/chat` and `/chat/stream` can take tens of seconds (LLM + UniProt + BioLM MCP spawn/fold).
 
 ---
 
@@ -156,6 +156,34 @@ Optional fields on hits/candidates (`protein_name`, `function`, `gene_names`,
 depending on which tools ran and what UniProt returned.
 
 Also expect a `Set-Cookie: protdap_session=...` on the response when using curl with `-c`/`-b`.
+
+---
+
+## `POST /chat/stream`
+
+Same request body as `POST /chat`. Returns Server-Sent Events (`text/event-stream`).
+The React UI uses this endpoint; `POST /chat` remains for non-streaming clients.
+
+### Sample
+
+```bash
+curl -N -s -X POST http://localhost:8000/chat/stream \
+  -H "Content-Type: application/json" \
+  -H "Accept: text/event-stream" \
+  -c cookies.txt -b cookies.txt \
+  -d '{"message": "What is UniProt accession P01308?"}'
+```
+
+### Event types
+
+| Event | Data | When |
+|---|---|---|
+| `status` | `{"message": "Searching UniProt…"}` | Thinking / tool progress |
+| `token` | `{"delta": "..."}` | ReAct agent text chunk (not nested `propose_variants` LLM) |
+| `done` | full `ChatResponse` JSON | End of turn; structured lists only here |
+| `error` | `{"detail": "..."}` | Failure after the stream started |
+
+`-N` disables curl buffering so events print as they arrive.
 
 ---
 

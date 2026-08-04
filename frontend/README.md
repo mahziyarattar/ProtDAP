@@ -23,10 +23,12 @@ npm install
 npm run dev
 ```
 
-Opens on `http://localhost:5173`. In dev, Vite proxies `/chat`, `/fold`,
-`/structures/*`, and `/liveness` to `http://127.0.0.1:8000` (see
-`vite.config.ts`), so the app can use relative fetch paths and the
-session cookie is treated as same-origin. Override the backend target with
+Opens on `http://localhost:5173`. In dev, Vite proxies `/chat` (and
+`/chat/stream`), `/fold`, `/structures/*`, and `/liveness` to
+`http://127.0.0.1:8000` (see `vite.config.ts`), so the app can use relative
+fetch paths and the session cookie is treated as same-origin. The proxy
+disables buffering for `text/event-stream` so SSE status/token events
+arrive promptly. Override the backend target with
 `VITE_BACKEND_ORIGIN=http://127.0.0.1:8001 npm run dev` if the backend runs
 on a different port.
 
@@ -52,10 +54,11 @@ module, so it's loaded via a plain `<script>`/`<link>` tag at runtime
 ```
 src/
   api/            # Types mirroring app/models.py, and the fetch client
+                  # (POST /chat kept for non-UI; UI uses POST /chat/stream SSE)
   state/          # conversationStore (chat + accumulated lists, localStorage)
                   # + structuresStore (overlay selection, on-demand folds; not persisted)
   components/
-    chat/         # Transcript, message bubbles, collapsible tool-trace details
+    chat/         # Transcript, message bubbles, status line, collapsible tool-trace
     proteins/     # Retrieved-protein cards
     candidates/   # Candidate cards: sequence view with highlighted
                   # mutations, modifications table, export buttons
@@ -65,6 +68,12 @@ src/
 
 Notes:
 
+- The chat UI always calls `POST /chat/stream` (SSE). While the agent runs,
+  a status line appears above the partial assistant bubble (e.g. "Searching
+  UniProt…"); reply tokens append into that bubble. `retrieved_proteins` /
+  `candidates` / highlights arrive only on the final `done` event (same
+  shape as `ChatResponse`). Non-streaming `POST /chat` remains available
+  for curl and other API clients.
 - The backend only returns the latest turn's data (full context lives
   server-side via the session cookie), so the frontend keeps its own
   transcript and accumulated `retrieved_proteins`/`candidates` lists
