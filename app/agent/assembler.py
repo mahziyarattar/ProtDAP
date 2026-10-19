@@ -13,10 +13,17 @@ agent always folds/scores the literal sequence text `propose_variants`
 returned.
 """
 
+import re
 from typing import Any, Dict, List, Optional
 
 from app.models import Candidate, ParentInfo, ProteinHit, StructureInfo
 from app.tools.identity import compute_identity
+
+# UniProtKB accession (6 or 10 characters), used to recover a parent from
+# propose_variants parent_name values like "Hemoglobin subunit alpha (P69905)".
+_UNIPROT_ACCESSION_RE = re.compile(
+    r"\b([OPQ][0-9][A-Z0-9]{3}[0-9]|[A-NR-Z][0-9](?:[A-Z][A-Z0-9]{2}[0-9]){1,2})\b"
+)
 
 
 def _collect_retrieved_proteins(trace: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
@@ -47,12 +54,51 @@ def _collect_retrieved_proteins(trace: List[Dict[str, Any]]) -> List[Dict[str, A
     return proteins
 
 
+def _normalize_sequence(sequence: Optional[str]) -> str:
+    if not sequence:
+        return ""
+    return "".join(sequence.split()).upper()
+
+
+def _accession_from_parent_name(parent_name: Optional[str]) -> Optional[str]:
+    if not parent_name:
+        return None
+    match = _UNIPROT_ACCESSION_RE.search(parent_name)
+    return match.group(1) if match else None
+
+
+def _parent_lookup_pool(
+    retrieved_proteins: List[Dict[str, Any]],
+    prior_retrieved: Optional[List[Dict[str, Any]]],
+) -> List[Dict[str, Any]]:
+    """This-turn hits first, then session proteins not already present."""
+    pool = list(retrieved_proteins)
+    seen = {protein.get("accession") for protein in pool if protein.get("accession")}
+    for protein in prior_retrieved or []:
+        accession = protein.get("accession")
+        if accession and accession in seen:
+            continue
+        if accession:
+            seen.add(accession)
+        pool.append(protein)
+    return pool
+
+
 def _find_parent_metadata(
-    parent_sequence: str, retrieved_proteins: List[Dict[str, Any]]
+    parent_sequence: str,
+    retrieved_proteins: List[Dict[str, Any]],
+    parent_name: Optional[str] = None,
 ) -> Optional[Dict[str, Any]]:
-    for protein in retrieved_proteins:
-        if protein.get("sequence") == parent_sequence:
-            return protein
+    needle = _normalize_sequence(parent_sequence)
+    if needle:
+        for protein in retrieved_proteins:
+            if _normalize_sequence(protein.get("sequence")) == needle:
+                return protein
+    accession = _accession_from_parent_name(parent_name)
+    if accession:
+        for protein in retrieved_proteins:
+            if protein.get("accession") == accession:
+                return protein
     return None
 
 
@@ -88,7 +134,9 @@ def _build_llm_proposed_candidates(
 
         parent_sequence = entry["args"].get("parent_sequence", "")
         parent_name = entry["args"].get("parent_name")
-        parent_meta = _find_parent_metadata(parent_sequence, retrieved_proteins)
+        parent_meta = _find_parent_metadata(
+            parent_sequence, retrieved_proteins, parent_name=parent_name
+        )
 
         for proposal in entry["result"] or []:
             sequence = proposal.get("sequence", "")
@@ -179,11 +227,18 @@ def filter_highlighted_accessions(
 
 def assemble_response(
     trace: List[Dict[str, Any]],
+    prior_retrieved: Optional[List[Dict[str, Any]]] = None,
 ) -> tuple[List[ProteinHit], List[Candidate], List[str]]:
-    """Build retrieved_proteins, candidates, and validated highlighted_accessions."""
+    """Build retrieved_proteins, candidates, and validated highlighted_accessions.
+
+    `retrieved_proteins` is still this turn's search/lookup hits only.
+    `prior_retrieved` (session last_retrieved_proteins) is used only to
+    attach parent accession/organism on follow-up diversify turns.
+    """
     retrieved_raw = _collect_retrieved_proteins(trace)
     retrieved_proteins = [ProteinHit(**protein) for protein in retrieved_raw]
-    candidates = _build_llm_proposed_candidates(trace, retrieved_raw)
+    parent_pool = _parent_lookup_pool(retrieved_raw, prior_retrieved)
+    candidates = _build_llm_proposed_candidates(trace, parent_pool)
     highlighted = filter_highlighted_accessions(
         _collect_highlighted_accessions(trace), retrieved_proteins
     )

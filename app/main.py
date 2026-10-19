@@ -157,7 +157,10 @@ async def chat(chat_request: ChatRequest, request: Request, response: Response) 
         session_id=session_id,
     )
 
-    retrieved_proteins, candidates, highlighted_accessions = assemble_response(trace)
+    retrieved_proteins, candidates, highlighted_accessions = assemble_response(
+        trace,
+        prior_retrieved=session_store.get_last_retrieved_proteins(session_id),
+    )
     tool_trace_summary = summarize_trace(trace)
 
     _commit_chat_turn(session_id, chat_request.message, reply_text, retrieved_proteins)
@@ -205,7 +208,10 @@ async def chat_stream(chat_request: ChatRequest, request: Request) -> StreamingR
                     reply_text = event["reply"]
                     trace = event["trace"]
 
-            retrieved_proteins, candidates, highlighted_accessions = assemble_response(trace)
+            retrieved_proteins, candidates, highlighted_accessions = assemble_response(
+                trace,
+                prior_retrieved=session_store.get_last_retrieved_proteins(session_id),
+            )
             tool_trace_summary = summarize_trace(trace)
             _commit_chat_turn(
                 session_id, chat_request.message, reply_text, retrieved_proteins
