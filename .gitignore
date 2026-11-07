@@ -24,6 +24,7 @@ node_modules/
 # Editors
 .vscode/
 .idea/
+.cursor/
 
 # Logs
 *.log
