@@ -13,6 +13,36 @@ It intentionally favors free/open backends (UniProt REST for protein
 knowledge) plus a real hosted model backend (BioLM, via a genuine MCP
 client) over rebuilding a private protein database from scratch.
 
+## Screenshots
+
+![ProtDAP chat retrieving human immune proteins, with recommended hits in the Proteins tab](docs/screenshots/search-immune-proteins.png)
+
+*Find human proteins involved in immune response* — UniProt hits in the
+Proteins tab. Recommended mediators are badged; the same list is summarized
+in the chat reply.
+
+![Hemoglobin subunit alpha folded in the Mol* Structures tab](docs/screenshots/structure-molstar-hemoglobin.png)
+
+Structures tab: hemoglobin subunit alpha (`P69905`) folded on demand and
+drawn in Mol*. Retrieved chains and `llm_proposed` candidates sit in the
+same catalog and can be overlaid (up to 5).
+
+### Example queries
+
+**Search** (fills the Proteins tab):
+
+> Find human proteins involved in immune response
+
+**Diversify** (fills the Candidates tab — start a new chat so the panel is
+only the proposals). Parent is named up front so the agent resolves one
+protein, then `propose_variants` folds each proposal:
+
+> Find human insulin and propose 3 more stable sequence variants.
+
+Each candidate card shows `origin: llm_proposed`, the parent accession,
+percent identity, mean pLDDT, and the substitutions highlighted on the
+sequence. Folding the three variants takes a minute or two.
+
 ## What it actually does
 
 1. You send a message to `POST /chat` or `POST /chat/stream` (e.g. *"Find a
